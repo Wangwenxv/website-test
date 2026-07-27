@@ -1,6 +1,6 @@
 const MIN_DB = 30;
 const MAX_DB = 110;
-const HISTORY_MS = 60_000;
+const HISTORY_MS = 60000;
 const STORAGE_KEY = "morning-reading-volume";
 
 const elements = {
@@ -64,7 +64,13 @@ for (const control of [elements.minTarget, elements.maxTarget, elements.calibrat
 window.addEventListener("resize", () => drawHistory(performance.now()));
 
 async function startListening() {
-  if (!navigator.mediaDevices?.getUserMedia) {
+  if (!window.isSecureContext) {
+    setStatus("非安全页面", "error");
+    elements.note.textContent = "麦克风访问需要 HTTPS。请使用 GitHub Pages 的 https:// 地址打开。";
+    return;
+  }
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
     setStatus("不支持", "error");
     elements.note.textContent = "当前浏览器不支持麦克风访问。";
     return;
@@ -103,7 +109,8 @@ async function startListening() {
     tick(performance.now());
   } catch (error) {
     stopListening({ keepMessage: true });
-    const denied = error?.name === "NotAllowedError" || error?.name === "SecurityError";
+    const errorName = error && error.name;
+    const denied = errorName === "NotAllowedError" || errorName === "SecurityError";
     setStatus(denied ? "未授权" : "失败", "error");
     elements.note.textContent = denied
       ? "麦克风权限被拒绝，请在浏览器地址栏重新允许。"
@@ -312,7 +319,7 @@ function paintHistoryLine(ctx, width, height, now) {
   ctx.lineCap = "round";
   ctx.stroke();
 
-  const latest = history.at(-1);
+  const latest = history[history.length - 1];
   if (latest) {
     const x = width - ((now - latest.time) / HISTORY_MS) * width;
     const y = dbToY(latest.db, height);
