@@ -1,6 +1,7 @@
 const MIN_DB = 30;
 const MAX_DB = 110;
 const HISTORY_MS = 60000;
+const MICROPHONE_TIMEOUT_MS = 15000;
 const STORAGE_KEY = "morning-reading-volume";
 
 const elements = {
@@ -70,17 +71,19 @@ async function startListening() {
     return;
   }
 
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+  const getMedia = getUserMediaHandler();
+  if (!getMedia) {
     setStatus("不支持", "error");
-    elements.note.textContent = "当前浏览器不支持麦克风访问。";
+    elements.note.textContent = "当前浏览器没有开放麦克风 API。请用 Chrome、Edge 或 Safari 直接打开 GitHub Pages 链接，不要在微信/QQ等内置浏览器里打开。";
     return;
   }
 
   try {
     elements.startButton.disabled = true;
     setStatus("连接中", "");
+    elements.note.textContent = "正在请求麦克风权限。如果浏览器弹出权限提示，请选择允许。";
 
-    microphoneStream = await navigator.mediaDevices.getUserMedia({
+    microphoneStream = await requestMicrophoneStream(getMedia, {
       audio: {
         echoCancellation: false,
         noiseSuppression: false,
@@ -112,14 +115,81 @@ async function startListening() {
     const errorName = error && error.name;
     const denied = errorName === "NotAllowedError" || errorName === "SecurityError";
     setStatus(denied ? "未授权" : "失败", "error");
-    elements.note.textContent = denied
-      ? "麦克风权限被拒绝，请在浏览器地址栏重新允许。"
-      : "麦克风连接失败，请确认设备可用。";
+    elements.note.textContent = getMicrophoneErrorMessage(errorName);
   } finally {
     if (!microphoneStream) {
       elements.startButton.disabled = false;
     }
   }
+}
+
+function getUserMediaHandler() {
+  if (navigator.mediaDevices && typeof navigator.mediaDevices.getUserMedia === "function") {
+    return (constraints) => navigator.mediaDevices.getUserMedia(constraints);
+  }
+
+  const legacyGetUserMedia =
+    navigator.getUserMedia ||
+    navigator.webkitGetUserMedia ||
+    navigator.mozGetUserMedia ||
+    navigator.msGetUserMedia;
+
+  if (!legacyGetUserMedia) {
+    return null;
+  }
+
+  return (constraints) =>
+    new Promise((resolve, reject) => {
+      legacyGetUserMedia.call(navigator, constraints, resolve, reject);
+    });
+}
+
+function requestMicrophoneStream(getMedia, constraints) {
+  let timedOut = false;
+  const request = getMedia(constraints);
+
+  const timeout = new Promise((resolve, reject) => {
+    window.setTimeout(() => {
+      timedOut = true;
+      const error = new Error("Microphone permission prompt timed out");
+      error.name = "PermissionTimeoutError";
+      reject(error);
+    }, MICROPHONE_TIMEOUT_MS);
+  });
+
+  request.then((stream) => {
+    if (timedOut) {
+      for (const track of stream.getTracks()) {
+        track.stop();
+      }
+    }
+  }).catch(() => {});
+
+  return Promise.race([request, timeout]);
+}
+
+function getMicrophoneErrorMessage(errorName) {
+  if (errorName === "PermissionTimeoutError") {
+    return "麦克风权限请求没有返回。请检查地址栏左侧的站点权限，允许 github.io 使用麦克风后刷新页面。";
+  }
+
+  if (errorName === "NotAllowedError" || errorName === "SecurityError") {
+    return "麦克风权限被浏览器或当前站点阻止。请在地址栏左侧的站点设置中允许麦克风，然后刷新页面。";
+  }
+
+  if (errorName === "NotFoundError" || errorName === "DevicesNotFoundError") {
+    return "浏览器没有找到可用麦克风。请确认系统输入设备已启用。";
+  }
+
+  if (errorName === "NotReadableError" || errorName === "TrackStartError") {
+    return "麦克风已被其他程序占用，或浏览器暂时无法读取设备。请关闭占用麦克风的软件后重试。";
+  }
+
+  if (errorName === "OverconstrainedError" || errorName === "ConstraintNotSatisfiedError") {
+    return "当前麦克风不满足浏览器请求条件。请换一个浏览器或设备重试。";
+  }
+
+  return `麦克风连接失败${errorName ? `（${errorName}）` : ""}。请换用 Chrome、Edge 或 Safari 直接打开 GitHub Pages 链接重试。`;
 }
 
 function stopListening(options = {}) {
