@@ -1,0 +1,649 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ITAM 合同与软件密钥管理原型 V15</title><link rel="icon" href="data:,"><link rel="stylesheet" href="assets/foundation/tokens.css"><style>
+:root{--nav:var(--nav-background);--primary:var(--primary-6);--bg:var(--color-bg-5);--surface:var(--color-bg-white);--border:var(--color-border-2);--text:var(--color-text-1);--muted:var(--color-text-2);--danger:var(--danger-7);--good:var(--success-7)}
+*{box-sizing:border-box}body{margin:0;font:14px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--text)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;background:white;border:1px solid var(--border);border-radius:4px;padding:8px 13px;color:var(--text);min-height:38px}button:hover{background:var(--primary-1);border-color:var(--primary-3)}button:disabled{cursor:not-allowed;color:var(--color-text-3);background:var(--color-fill-1)}button.primary{background:var(--primary);color:white;border-color:var(--primary)}button.danger{color:var(--danger)}button.link{border:0;background:transparent;color:var(--primary);padding:5px 7px}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--primary-3);outline-offset:2px}
+header{height:54px;background:var(--nav);color:white;display:flex;align-items:center;gap:24px;padding:0 22px;position:sticky;top:0;z-index:10}header strong{font-size:18px}header span{color:var(--nav-text-color)}header .right{margin-left:auto;display:flex;gap:10px;align-items:center}header .right label{display:flex;align-items:center;gap:8px;white-space:nowrap}header .right select{display:inline-block;width:auto;margin:0;background:var(--color-bg-white);color:var(--text)}
+aside{position:fixed;top:54px;bottom:0;width:204px;background:white;border-right:1px solid var(--border);padding:20px 12px;overflow:auto}aside small{display:block;color:var(--muted);margin:18px 12px 6px}aside button{display:block;width:100%;text-align:left;border:0;margin:3px 0}aside button.active{color:var(--primary);background:var(--primary-1);font-weight:600}aside a{display:block;margin:12px;color:var(--primary)}
+main{margin-left:204px;padding:24px;max-width:1700px}.crumb{color:var(--muted);font-size:13px}h1{font-size:24px;margin:8px 0}h2{font-size:18px;margin:0 0 14px}h3{font-size:15px}.sub{color:var(--muted);margin:0 0 20px}.notice{padding:12px 16px;border:1px solid var(--primary-2);background:var(--primary-1);border-radius:5px;margin:14px 0;color:var(--primary-7)}.warning{background:var(--warning-1);border-color:var(--warning-3);color:var(--warning-7)}
+.card{background:white;border:1px solid var(--border);border-radius:7px;padding:20px;margin-bottom:18px}.tabs{display:flex;gap:20px;border-bottom:1px solid var(--border);margin-bottom:18px}.tabs button{border:0;border-radius:0;background:none;padding:10px 5px}.tabs button.active{color:var(--primary);border-bottom:3px solid var(--primary);font-weight:600}
+.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:16px}.toolbar .spacer{flex:1}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:16px 0}.stat{padding:16px;background:var(--color-bg-white);border:1px solid var(--border);border-radius:6px}.stat span{color:var(--muted)}.stat b{display:block;font-size:28px;font-weight:600;font-variant-numeric:tabular-nums}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;text-align:left}th{background:var(--color-fill-1);color:var(--muted);font-weight:500}td,th{border-bottom:1px solid var(--border);padding:12px 10px;white-space:nowrap}td.wrap{white-space:normal}.tag{background:var(--color-fill-2);border-radius:4px;padding:3px 8px;font-size:12px;color:var(--color-text-2)}.tag.expired{background:var(--danger-1);color:var(--danger)}.tag.good{background:var(--success-1);color:var(--good)}.empty{text-align:center;padding:38px;color:var(--muted)}.foot{font-size:12px;color:var(--muted);padding-top:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.kv{display:grid;grid-template-columns:150px 1fr;gap:12px}.kv dt{color:var(--muted)}.kv dd{margin:0}.actions{display:flex;gap:6px}.hint{font-size:12px;color:var(--muted)}
+label{display:block;margin-bottom:12px}label input:not([type=checkbox]),label select,label textarea{display:block;width:100%;margin-top:6px}input,select,textarea{border:1px solid var(--color-border-3);padding:8px 10px;border-radius:4px;background:white;color:var(--text)}input[type=checkbox]{width:17px;height:17px;vertical-align:middle}input[type=number]{width:95px}textarea{resize:vertical}dialog{border:1px solid var(--border);border-radius:8px;width:min(860px,94vw);max-height:88vh;padding:0;box-shadow:0 20px 80px var(--color-overlay)}dialog::backdrop{background:var(--color-overlay)}.modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border)}.modal-head h2{margin:0}.modal-body{padding:20px 22px;overflow:auto;max-height:66vh}.modal-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--border)}#error{color:var(--danger);margin:10px 0}#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);padding:12px 20px;background:var(--nav-background);color:white;z-index:100;border-radius:5px;max-width:85vw}#toast:empty{display:none}.total{font-size:18px;text-align:right;margin-top:12px}a{color:var(--primary)}.pillbar{display:flex;gap:8px;flex-wrap:wrap}.small{font-size:12px}
+@media(max-width:760px){header{height:auto;min-height:54px;flex-wrap:wrap;padding:12px;gap:8px}header .right{margin-left:0;flex-wrap:wrap}aside{position:static;width:auto;border-bottom:1px solid var(--border);padding:8px;display:flex;gap:6px;overflow:auto}aside small,aside a{display:none}aside button{width:auto;white-space:nowrap}main{margin:0;padding:14px}.stats{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.kv{grid-template-columns:110px 1fr}.card{padding:12px}h1{font-size:21px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+.checklist{display:grid;gap:8px;max-height:260px;overflow:auto}.checklist label{padding:10px;border:1px solid var(--border);border-radius:5px;margin:0}.step{padding:6px 12px;border-radius:20px;background:var(--color-fill-2)}.error{color:var(--danger)}.annotations{border-left:3px solid var(--primary);padding:8px 12px;margin:12px 0;background:var(--color-fill-1)}.kv dd{overflow-wrap:anywhere}small{color:var(--muted)}button{touch-action:manipulation}.filter input{max-width:100%}a{overflow-wrap:anywhere}.menu-group{margin:16px 10px 6px;color:var(--color-text-3);font-size:12px}.field-name{font-weight:600}.field-id{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--color-text-2)}.field-meta{display:flex;gap:6px;align-items:center}.lock{color:var(--color-text-3);font-size:12px}.toolbar-title{font-size:16px;font-weight:600}.required{color:var(--danger)}
+
+/**
+ * 本文件由 scripts/build-tokens.js 从 references/foundation/design-tokens.json 生成，不要手改。
+ * 改色值 / 间距 / 圆角等 → 改 design-tokens.json → 重新跑 `node scripts/build-tokens.js`。
+ * 来源: Figma Token Studio export — design-tokens_tokens.json，更新于 2026-05-19
+ */
+:root {
+  /* ── 基础色板 ── */
+  --primary-1: #e6f4ff;  /* 浅色/白底悬浮 */
+  --primary-2: #c9e6ff;  /* 文字禁用 */
+  --primary-3: #9ccdff;  /* 一般禁用 */
+  --primary-4: #6eb1ff;  /* 特殊场景 */
+  --primary-5: #4093ff;  /* 悬浮 hover */
+  --primary-6: #1272ff;  /* 常规 default */
+  --primary-7: #0452d9;  /* 点击 active */
+  --success-1: #e6ffee;  /* 浅色/白底悬浮 */
+  --success-2: #cef5dc;  /* 文字禁用 */
+  --success-3: #9ee8bc;  /* 一般禁用 */
+  --success-4: #72dca0;  /* 特殊场景 */
+  --success-5: #4acf88;  /* 悬浮 hover */
+  --success-6: #27c274;  /* 常规 default */
+  --success-7: #179c5e;  /* 点击 active */
+  --warning-1: #fff7e6;  /* 浅色/白底悬浮 */
+  --warning-2: #ffeecc;  /* 文字禁用 */
+  --warning-3: #ffdb9e;  /* 一般禁用 */
+  --warning-4: #ffc670;  /* 特殊场景 */
+  --warning-5: #ffad42;  /* 悬浮 hover */
+  --warning-6: #ff9214;  /* 常规 default */
+  --warning-7: #d97007;  /* 点击 active */
+  --danger-1: #ffece6;  /* 浅色/白底悬浮 */
+  --danger-2: #ffdbd1;  /* 文字禁用 */
+  --danger-3: #ffb8a8;  /* 一般禁用 */
+  --danger-4: #ff9380;  /* 特殊场景 */
+  --danger-5: #ff6a57;  /* 悬浮 hover */
+  --danger-6: #f43b2c;  /* 常规 default */
+  --danger-7: #ce241b;  /* 点击 active */
+
+  /* ── 文字色 ── */
+  --color-text-1: #1e252e;  /* 强调/正文标题 */
+  --color-text-2: #475468;  /* 次强调/正文标题 */
+  --color-text-3: #7588a3;  /* 次要信息 */
+  --color-text-4: #b2bdcc;  /* 置灰信息 */
+  --color-text-white: #ffffff;  /* 纯白文字 */
+
+  /* ── 背景色 ── */
+  --color-bg-white: #ffffff;  /* 纯白填充 */
+  --color-bg-1: #ffffff;  /* 特殊深色背景（光线模式下白色） */
+  --color-bg-2: #ffffff;  /* 白色页面背景 */
+  --color-bg-3: #ffffff;  /* 二级容器背景 */
+  --color-bg-4: #ffffff;  /* 悬浮元素 hover */
+  --color-bg-5: #f4f5f8;  /* 灰色页面背景 */
+  --color-bg-6: rgba(255,255,255,0.6);  /* 透明色背景 */
+  --color-bg-7: rgba(255,255,255,0.4);  /* 透明色背景(深) */
+
+  /* ── 描边色 ── */
+  --color-border-1: #edeff3;  /* 浅/信息分割线 */
+  --color-border-2: #e6e9ee;  /* 一般/容器描边 */
+  --color-border-3: #d1d7e1;  /* 深/表单描边 */
+  --color-border-4: #b2bdcc;  /* 重/特殊场景 */
+
+  /* ── 填充色 ── */
+  --color-fill-1: #f6f8f9;  /* 浅/禁用 */
+  --color-fill-2: #f4f5f8;  /* 常规/白底悬浮 */
+  --color-fill-3: #e6e9ee;  /* 深/浅灰悬浮 */
+  --color-fill-4: #d1d7e1;  /* 重/灰底悬浮 */
+  --color-fill-5: #b2bdcc;  /* 重/特殊场景 */
+
+  /* ── 导航专属色 ── */
+  --nav-background: #282f3f;  /* 深色导航背景 */
+  --nav-sidebar-background: #f6f8f9;  /* 灰色侧导航背景，实测 Figma 使用 color-fill-1（#f6f8f9），原 Token Studio 导出值 #fafbfc 有误 */
+  --nav-icon-color: #ffffff99;  /* 深色导航图标颜色（60% 透明度） */
+  --nav-text-color: #ffffffcc;  /* 深色导航文字颜色（80% 透明度） */
+  --nav-arrow-color: #ffffff80;  /* 深色导航箭头颜色（50% 透明度） */
+
+  /* ── 蒙层 ── */
+  --color-overlay: #00000099;  /* 模态弹窗、抽屉的背景蒙层（60% 透明度） */
+
+  /* ── 语义别名（引用基础色板，不要在这里改色值，改 design-tokens.json 里对应的基础色） ── */
+  --primary-default: var(--primary-6);
+  --primary-hover: var(--primary-5);
+  --primary-active: var(--primary-7);
+  --primary-disabled: var(--primary-3);
+  --primary-bg: var(--primary-1);
+  --success-bg: var(--success-1);
+  --warning-default: var(--warning-6);
+  --warning-hover: var(--warning-5);
+  --warning-active: var(--warning-7);
+  --warning-bg: var(--warning-1);
+  --text-primary: var(--color-text-1);
+  --text-secondary: var(--color-text-2);
+  --text-tertiary: var(--color-text-3);
+  --text-disabled: var(--color-text-4);
+  --text-inverse: var(--color-text-white);
+  --border-light: var(--color-border-1);
+  --border-heavy: var(--color-border-4);
+  --fill-disabled: var(--color-fill-1);
+  --fill-default: var(--color-fill-2);
+  --fill-hover: var(--color-fill-3);
+  --fill-active: var(--color-fill-4);
+  --fill-heavy: var(--color-fill-5);
+  --bg-overlay-light: var(--color-bg-6);
+  --bg-overlay-deep: var(--color-bg-7);
+  --warning-disabled: var(--warning-3);
+  --success-disabled: var(--success-3);
+  --danger-bg: var(--danger-1);
+  --danger-disabled: var(--danger-3);
+  --danger-hover: var(--danger-5);
+  --danger-default: var(--danger-6);
+  --danger-active: var(--danger-7);
+
+  /* ── 字体 ── */
+  --font-family-cn: "PingFang SC", "Noto Sans SC", sans-serif;
+  --font-family-en: "Arial", sans-serif;
+  --font-family-number: "Helvetica Neue", "Arial", sans-serif;
+  --font-family-mono: "Geist Mono", "JetBrains Mono", monospace;
+
+  /* ── 字号 / 行高 / 字重（slug 对照见 scripts/build-tokens.js 的 FONT_SIZE_SLUGS） ── */
+  --font-size-auxiliary-12: 12px;  /* 辅助-12 */
+  --line-height-auxiliary-12: 20px;
+  --font-weight-auxiliary-12-regular: 400;
+  --font-weight-auxiliary-12-medium: 500;
+  --font-size-body-14: 14px;  /* 正文-14 */
+  --line-height-body-14: 22px;
+  --font-weight-body-14-regular: 400;
+  --font-weight-body-14-medium: 500;
+  --font-size-title-16: 16px;  /* 标题-16 */
+  --line-height-title-16: 24px;
+  --font-weight-title-16-regular: 400;
+  --font-weight-title-16-medium: 500;
+  --font-size-title-18: 18px;  /* 标题-18 */
+  --line-height-title-18: 26px;
+  --font-weight-title-18-regular: 400;
+  --font-weight-title-18-medium: 500;
+  --font-size-title-20: 20px;  /* 标题-20 */
+  --line-height-title-20: 28px;
+  --font-weight-title-20-regular: 400;
+  --font-weight-title-20-medium: 500;
+  --font-size-title-24: 24px;  /* 标题-24 */
+  --line-height-title-24: 32px;
+  --font-weight-title-24-regular: 400;
+  --font-weight-title-24-medium: 500;
+  --font-size-display-32: 32px;  /* 运营-32 */
+  --line-height-display-32: 36px;
+  --font-weight-display-32-regular: 400;
+  --font-weight-display-32-medium: 500;
+  --font-size-display-36: 36px;  /* 运营-36 */
+  --line-height-display-36: 44px;
+  --font-weight-display-36-regular: 400;
+  --font-weight-display-36-medium: 500;
+  --font-size-display-48: 48px;  /* 运营-48 */
+  --line-height-display-48: 56px;
+  --font-weight-display-48-regular: 400;
+  --font-weight-display-48-medium: 500;
+
+  /* ── 间距 ── */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-10: 40px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+  --spacing-24: 96px;
+
+  /* ── 圆角 ── */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ── 阴影 ── */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.06);
+  --shadow-md: 0 4px 12px rgba(0,0,0,.08);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,.12);
+  --shadow-xl: 0 16px 40px rgba(0,0,0,.16);
+
+  /* ── 断点（仅供 JS/文档引用，@media 查询里不能用 CSS 变量，需手写同值像素） ── */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  /* ── 层级 ── */
+  --z-navbar: 1000;
+  --z-dropdown: 900;
+  --z-modal: 800;
+  --z-toast: 700;
+
+  /* ── 过渡 ── */
+  --transition-instant: 100ms ease-out;
+  --transition-fast: 150ms ease-in-out;
+  --transition-standard: 200ms ease-out;
+  --transition-medium: 300ms cubic-bezier(.4,0,.2,1);
+  --transition-slow: 500ms ease-in-out;
+}
+
+
+.group-demo{display:flex;gap:12px;align-items:center;flex-wrap:wrap}.group-demo label{margin:0;display:flex;gap:8px;align-items:center}.group-demo select{margin:0!important;width:auto!important}.group-layout{display:flex;min-height:580px;background:var(--color-bg-1);border:1px solid var(--color-border-2);border-radius:4px;overflow:hidden}.group-tree{width:210px;flex-shrink:0;border-right:1px solid var(--color-border-2);padding:20px 12px;background:var(--color-fill-1)}.group-panel{min-width:0;flex:1;padding:22px}.group-tree-title{font-weight:600;margin:0 10px 24px;display:flex;justify-content:space-between}.group-node{display:block;width:100%;text-align:left;border:0;background:transparent;margin:5px 0;padding:12px}.group-node.child{padding-left:30px}.group-node.active{background:var(--primary-1);color:var(--primary-6);font-weight:600}.group-parent{color:var(--color-text-3);padding:12px;font-size:12px}.group-tree-foot{font-size:12px;line-height:1.9;color:var(--color-text-3);padding:18px 10px;border-top:1px solid var(--color-border-2);margin-top:28px}.group-caption{color:var(--color-text-3);font-size:13px;line-height:1.8;margin:4px 0 20px}.group-section{margin:30px 0 16px}.group-panel h2{font-size:18px}.group-panel .tag{font-weight:600}.group-panel td{padding:15px 12px}.group-panel small{line-height:2}.group-panel .tabs{margin-bottom:20px}.group-panel .tabs button.active{color:var(--primary-6);border-bottom:2px solid var(--primary-6)}@media(max-width:950px){.group-tree{width:165px}.group-panel{padding:14px}.group-demo .spacer{display:none}}@media(max-width:640px){.group-layout{display:block}.group-tree{width:auto!important;border-right:0;border-bottom:1px solid var(--color-border-2)}.group-tree-foot{display:none}.group-node{display:inline-block;width:auto}}
+
+.group-invalid{outline:1px solid var(--danger);outline-offset:4px}
+.group-pinned{background:var(--primary-1)}.group-pinned td:first-child{font-weight:600}.group-panel{min-height:440px}.group-panel .toolbar h2{margin:0}
+header .right{gap:12px}header label{margin:0!important;display:flex;align-items:center;gap:8px}header select{margin:0!important;width:auto!important}header .right small{color:inherit}main h1{margin-bottom:8px}.toolbar h1{margin:0}.group-panel{min-height:420px}.checklist{max-height:330px}.tabs button[aria-selected=true]{color:var(--primary-6);border-bottom:2px solid var(--primary-6)}#dialog{width:min(900px,94vw);border:1px solid var(--border);border-radius:6px;padding:0;max-height:90vh}#modal-body{overflow:auto;max-height:65vh;padding:20px 24px}#modal-error{color:var(--danger);margin:0 24px 12px;outline:none}input:disabled,select:disabled{background:var(--color-fill-1);color:var(--color-text-3)}.toolbar .tag{white-space:nowrap}.table-wrap table{min-width:620px}.hint{line-height:1.7}.grid label input[type=number]{width:100%}button:focus-visible{outline:2px solid var(--primary-6);outline-offset:2px}</style><style>#query{width:320px;max-width:100%}</style><style>.warehouse-summary{display:flex;align-items:center;gap:20px;flex-wrap:wrap;background:var(--color-bg-1);border:1px solid var(--border);padding:16px 20px;margin:16px 0}.transfer-success{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.incoming{font-weight:600}.warehouse-summary .hint{flex:1;min-width:220px}.tabs{flex-wrap:wrap}.group-panel h2{font-size:18px}</style><style>
+.prototype-note{font-size:12px;color:var(--color-text-3);margin:8px 0 16px}.page-header--itsm{padding:12px 20px;background:var(--color-bg-white);margin:-24px -24px 16px;border-bottom:1px solid var(--color-border-2)}.page-header h1{font-size:20px}.detail-header{border-bottom:1px solid var(--color-border-2);padding-bottom:16px}.detail-title{margin:0;font-size:20px}.detail-title small{font-size:13px;margin-left:12px}.attachment-section{margin-top:24px;padding-top:12px;border-top:1px solid var(--color-border-2)}.tag{font-weight:600}.person-wrapper select{width:100%}.compact{max-height:180px;margin-bottom:18px}.toolbar input[type=date]{width:150px}.toolbar input[type=number]{width:80px}#install-preview{margin-top:12px}.toolbar .hint{margin-left:6px}.table-wrap td{max-width:340px;overflow:hidden;text-overflow:ellipsis}.field-error{display:block;color:var(--danger-7);font-size:12px}.invalid-field{border-color:var(--danger-6)!important}dialog:focus{outline:none}#modal-submit:disabled{opacity:.65}.contract-choice[hidden],.object-choice[hidden],.install-device-choice[hidden]{display:none}.checklist label:hover{background:var(--primary-1)}.prototype-note+ .card{margin-top:16px}
+</style><style>.has-actions th:last-child,.has-actions td:last-child{position:sticky;right:0;background:var(--color-bg-white);box-shadow:-4px 0 8px var(--color-fill-1);min-width:160px;z-index:1}.has-actions th:last-child{background:var(--color-fill-1)}.has-actions th:first-child{z-index:0}</style><style>@media(max-width:760px){.page-header--itsm{margin:-14px -14px 16px;padding:12px 14px}.card{min-width:0}.detail-header h2{overflow-wrap:anywhere}.toolbar input[type=date]{max-width:100%}}.refer-content .data-title{font-weight:600;margin:12px 0}.refer-content p{margin:12px 0}</style><style>.field-id{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.field-name{font-weight:600}.lock{font-size:12px;color:var(--color-text-3)}[hidden]{display:none!important}.toolbar label{margin-bottom:0}.grid label{min-width:0}</style><style>
+#selector-dialog{width:min(1160px,96vw);max-height:92vh;padding:0;border:1px solid var(--color-border-2);border-radius:4px;background:var(--color-bg-white)}.picker-head{display:flex;align-items:center;justify-content:space-between;padding:24px 26px 12px}.picker-head h2{font-size:22px;margin:0}.picker-close{border:0;background:transparent;font-size:26px;color:var(--color-text-3);padding:0 5px;line-height:1}.picker-body{padding:16px 26px;max-height:70vh;overflow:auto}.picker-range{padding:14px 18px;background:var(--primary-1);border-radius:4px;margin-bottom:16px;color:var(--color-text-1)}.asset-scope{display:flex;border:1px solid var(--color-border-3);border-radius:4px;margin-bottom:18px;align-items:stretch}.asset-scope>span{padding:10px 16px;background:var(--color-fill-2);border-right:1px solid var(--color-border-3);white-space:nowrap}.asset-scope select{border:0;flex:1;min-width:0}.picker-search{display:flex;align-items:stretch;gap:0;margin-bottom:18px;flex-wrap:wrap}.picker-search>select{width:185px;border-radius:4px 0 0 4px}.picker-search>input{min-width:180px;flex:1;border-radius:0}.picker-search button{border-radius:0}.picker-search button:last-of-type{border-radius:0 4px 4px 0}.picker-search .spacer{min-width:12px}.picker-count{padding:7px 10px;margin-left:12px;align-self:center;background:var(--color-fill-2);white-space:nowrap;border-radius:3px}.exact-search{display:flex;align-items:center;gap:7px;white-space:nowrap;border:1px solid var(--color-border-3);padding:7px 12px;margin:0;color:var(--color-text-2)}.picker-empty{height:310px;display:flex;align-items:center;justify-content:center;flex-direction:column;color:var(--color-text-2);gap:20px}.picker-empty svg{width:170px;height:120px}.picker-empty strong{font-size:17px}.picker-pagination{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:16px 0 6px;flex-wrap:wrap;font-size:13px;color:var(--color-text-2)}.picker-page-left,.picker-page-right{display:flex;align-items:center;gap:16px}.picker-page-left select{padding:5px;width:70px}.picker-page-left>span:last-child{color:var(--color-text-3)}.picker-footer{display:flex;gap:10px;padding:16px 26px 22px;align-items:center}.picker-footer .spacer{flex:1}.picker-footer button{min-width:85px}.picker-body table{min-width:650px}.picker-body th{background:var(--color-fill-2);font-weight:600}.picker-body td,.picker-body th{padding:13px 12px}#picker-error{color:var(--danger-7);margin:8px 0 0}.selection-panel{border:1px solid var(--color-border-2);border-radius:4px;padding:14px;margin:16px 0}.selection-panel>.toolbar{margin:0 0 10px}.selection-panel>.table-wrap{max-height:190px;overflow:auto}.selection-placeholder{padding:15px;background:var(--color-fill-1);color:var(--color-text-3)}#picker-results-title:empty{display:none}@media(max-width:760px){.picker-head{padding:16px}.picker-body{padding:12px 16px}.picker-search>select{width:135px}.picker-search>input{width:calc(100% - 135px);min-width:100px}.picker-search{row-gap:8px}.picker-count{margin-left:0}.picker-footer{padding:12px 16px}.picker-page-left,.picker-page-right{gap:10px}}
+</style><style>#picker-results{max-height:390px;overflow:auto}.picker-footer button.primary:disabled{background:var(--primary-3);border-color:var(--primary-3);color:var(--color-text-white);cursor:not-allowed}</style></head><body><header><strong>ITAM</strong><span>合同与软件密钥管理</span><div class="right"><span>当前操作机构：<strong id="actor"></strong></span><button type="button" onclick="resetDemo()">重置演示</button></div></header><aside id="nav"></aside><main id="main"></main><dialog id="dialog" aria-labelledby="modal-title"><div class="modal-head"><h2 id="modal-title"></h2><button type="button" onclick="closeDialog()" aria-label="关闭弹窗">关闭</button></div><form id="modal-form" novalidate><div id="modal-body"></div><p id="modal-error" role="alert" tabindex="-1"></p><div class="modal-foot"><button id="modal-cancel" type="button" onclick="closeDialog()">取消</button><button id="modal-submit" type="submit" class="primary">确定</button></div></form></dialog><dialog id="selector-dialog" aria-labelledby="picker-title"><div class="picker-head"><h2 id="picker-title"></h2><button type="button" class="picker-close" onclick="cancelPicker()" aria-label="关闭选择器">×</button></div><div class="picker-body"><div id="picker-controls"></div><h3 id="picker-results-title"></h3><div id="picker-results"></div><div id="picker-pagination" class="picker-pagination"></div><p id="picker-error" role="alert" tabindex="-1"></p></div><div class="picker-footer"><button type="button" id="picker-clear" onclick="clearPickerSelection()">清空已选</button><span class="spacer"></span><button type="button" id="picker-add" class="primary" onclick="confirmPicker()">添加已选</button><button type="button" onclick="cancelPicker()">取消</button></div></dialog><div id="toast" role="status" aria-live="polite"></div><script>
+'use strict';
+let S, actor='hq',view='warehouses',tab='balance',search='',pageIndex=1,uid=2000,keyFilter=null,transferContext=null,lastTransferHint=null;
+const softwareOptions=['Office','CAD','终端安全'];
+const typeLabel=t=>t==='single'?'单设备密钥':'多设备密钥';
+const now=()=>new Date().toLocaleString('sv-SE',{timeZone:'Asia/Shanghai'});
+const nextId=p=>p+'-'+(++uid);
+const warehouse=id=>S.warehouses.find(o=>o.id===id), key=id=>S.keys.find(k=>k.id===id), lot=id=>S.lots.find(l=>l.id===id),device=id=>S.devices.find(d=>d.id===id);
+function seed(){
+ if(S?.attachments)S.attachments.forEach(a=>URL.revokeObjectURL(a.url));
+ uid=2000;
+ S={warehouses:[{id:'hq',name:'总机构',parent:null,status:'active',manager:'总机构管理员'},{id:'east',name:'华东分机构',parent:'hq',status:'active',manager:'华东管理员'},{id:'site',name:'上海分机构',parent:'hq',status:'active',manager:'上海管理员'},{id:'south',name:'华南分机构',parent:'hq',status:'active',manager:'华南管理员'}],keys:[],lots:[],bindings:[],installs:[],transfers:[],audit:[],devices:[]};
+ for(let i=1;i<=40;i++)S.devices.push({id:'PC-'+String(i).padStart(3,'0'),name:['办公笔记本','研发工作站','设计电脑'][(i-1)%3],warehouse:['hq','east','site','south'][Math.floor((i-1)/10)],status:i===39?'inactive':i===40?'deleted':'active'});
+ function add(id,code,software,type,max,date){S.keys.push({id,code,name:software+'许可',software,type,max,serial:'DEMO-'+code,date,created:S.keys.length+1,createdWarehouse:'hq',deleted:false});S.lots.push({id:'L-'+id,key:id,warehouse:'hq',qty:max,parent:null});}
+ add('K1','OFF-M-030','Office','multi',30,'2025-01-01');add('K2','OFF-M-020','Office','multi',20,'2027-12-31');add('K3','OFF-M-015','Office','multi',15,'');
+ add('C1','CAD-M-010','CAD','multi',10,'2025-10-01');
+ for(let i=1;i<=25;i++)add('S'+i,'OFF-S-'+String(i).padStart(3,'0'),'Office','single',1,'');
+ lot('L-K1').qty=20;S.lots.push({id:'L-east',key:'K1',warehouse:'east',qty:8,parent:'L-K1'},{id:'L-site',key:'K1',warehouse:'site',qty:2,parent:'L-east'});
+ S.transfers=[{id:'TR-SEED-1',from:'hq',to:'east',direction:'down',software:'Office',type:'multi',qty:10,items:[{lot:'L-K1',key:'K1',qty:10}],status:'accepted',created:'2026-11-01 09:00:00',finished:'2026-11-01 09:10:00',reason:'',operator:'总机构管理员'}, {id:'TR-SEED-2',from:'east',to:'site',direction:'down',software:'Office',type:'multi',qty:2,items:[{lot:'L-east',key:'K1',qty:2}],status:'accepted',created:'2026-11-01 10:00:00',finished:'2026-11-01 10:10:00',reason:'',operator:'华东管理员'}];
+ S.transfers.unshift({id:'TR-DEMO-IN-HQ',from:'east',to:'hq',direction:'transfer',software:'Office',type:'multi',qty:3,items:[{lot:'L-east',key:'K1',qty:3}],status:'pending',created:'2026-11-02 09:00:00',finished:'',reason:'分机构向总机构拨出示例',operator:'华东管理员'},{id:'TR-DEMO-IN-SOUTH',from:'hq',to:'south',direction:'transfer',software:'Office',type:'multi',qty:4,items:[{lot:'L-K2',key:'K2',qty:4}],status:'pending',created:'2026-11-02 09:05:00',finished:'',reason:'总机构向分机构拨出示例',operator:'总机构管理员'});
+ S.transfers.forEach(t=>{t.fromName=warehouse(t.from).name;t.toName=warehouse(t.to).name});actor='hq';view='warehouses';tab='balance';search='';pageIndex=1;keyFilter=null;lastTransferHint=null;extendSeed();assertState();
+}
+const pending=()=>S.transfers.filter(t=>t.status==='pending');
+const activeBindings=()=>S.bindings.filter(b=>b.active);
+const usedLot=id=>activeBindings().filter(b=>b.lot===id).length;
+const reservedLot=(id,exclude)=>pending().filter(t=>t.id!==exclude).flatMap(t=>t.items).filter(i=>i.lot===id).reduce((n,i)=>n+i.qty,0);
+const freeLot=(l,exclude)=>l.qty-usedLot(l.id)-reservedLot(l.id,exclude);
+const held=(k,o)=>S.lots.filter(l=>l.key===k&&l.warehouse===o).reduce((n,l)=>n+l.qty,0);
+const visibleKeys=o=>S.keys.filter(k=>!k.deleted&&held(k.id,o)>0);
+function metrics(software,type,o=actor){const ks=visibleKeys(o).filter(k=>(!software||k.software===software)&&(!type||k.type===type));const ids=new Set(ks.map(k=>k.id));const h=ks.reduce((n,k)=>n+held(k.id,o),0),u=activeBindings().filter(b=>b.warehouse===o&&ids.has(b.key)).length,x=pending().filter(t=>t.from===o).flatMap(t=>t.items).filter(i=>ids.has(i.key)).reduce((n,i)=>n+i.qty,0);return {held:h,used:u,stock:h-u,transit:x,available:h-u-x};}
+function isDescendant(child,parent){let c=warehouse(child),seen=new Set();while(c&&c.parent){if(seen.has(c.id))return false;seen.add(c.id);if(c.parent===parent)return true;c=warehouse(c.parent)}return false;}
+function requireActive(o){if(!warehouse(o)||warehouse(o).status!=='active')throw Error('机构不存在或已停用。');}
+function quantity(n){if(!Number.isSafeInteger(n)||n<1)throw Error('数量必须为正整数。');return n;}
+function assertState(){
+ if(S.contracts&&new Set(S.contracts.map(c=>c.id)).size!==S.contracts.length)throw Error('合同隐藏标识重复。');
+ for(const l of S.lots){if(!Number.isSafeInteger(l.qty)||l.qty<0||freeLot(l)<0)throw Error('库存一致性校验失败。');if(l.parent&&(!lot(l.parent)||lot(l.parent).key!==l.key||l.parent===l.id))throw Error('份额来源链无效。');}
+ for(const k of S.keys){const h=S.lots.filter(l=>l.key===k.id).reduce((n,l)=>n+l.qty,0);if(h!==(k.deleted?0:k.max))throw Error('全机构持有容量不守恒。');if(k.type==='single'&&k.max!==1)throw Error('单设备密钥容量必须为1。');}
+ const pairs=activeBindings().map(b=>b.key+'|'+b.device);if(new Set(pairs).size!==pairs.length)throw Error('同一密钥与设备不能重复绑定。');
+ for(const b of activeBindings()){const l=lot(b.lot);if(!l||l.key!==b.key||l.warehouse!==b.warehouse||!S.installs.some(i=>i.id===b.install))throw Error('设备绑定来源无效。');}
+ if(S.contractKeys){const pairs=S.contractKeys.map(r=>r.contract+'|'+r.key);if(new Set(pairs).size!==pairs.length)throw Error('合同—密钥重复关联。');for(const r of S.contractKeys)if(!contract(r.contract)||!key(r.key)||key(r.key).deleted)throw Error('合同—密钥关联无效。');}
+ if(S.operations)for(const r of S.operations){const b=S.bindings.find(b=>b.id===r.binding);if(!b)throw Error('操作记录绑定不存在。');if(r.way==='安装'&&((r.status==='使用中')!==b.active))throw Error('安装记录与绑定状态不一致。');if(r.way==='回收'&&(!S.operations.some(i=>i.id===r.source&&i.binding===r.binding)||b.active))throw Error('回收未对应原安装。');}
+ for(const t of pending())if(t.items.reduce((n,i)=>n+i.qty,0)!==t.qty)throw Error('调拨预占不完整。');
+}
+function transaction(action,fn){const snapshot=JSON.stringify(S),oldUid=uid;try{const result=fn();assertState();S.audit.push({id:nextId('AU'),time:now(),actor,action});return result}catch(e){S=JSON.parse(snapshot);uid=oldUid;throw e;}}
+function candidateLots(k,o,target,direction){return S.lots.filter(l=>l.key===k&&l.warehouse===o&&freeLot(l)>0).sort((a,b)=>a.id.localeCompare(b.id));}
+function planRequest({software,type,qty,devices=[],target=null,direction=null,o=actor}){
+ requireActive(o);quantity(qty);if(!softwareOptions.includes(software)||!['single','multi'].includes(type))throw Error('软件或密钥类型无效。');
+ if(devices.length){if(new Set(devices).size!==devices.length||devices.length!==qty)throw Error('选择的设备必须去重且数量恰好等于安装数量。');if(devices.some(d=>!device(d)||device(d).status!=='active'))throw Error('只能新增安装到有效设备。');}
+ if(direction){requireActive(target);if(target===o)throw Error('拨出与拨入机构不能相同。');}
+
+ const ks=visibleKeys(o).filter(k=>k.software===software&&k.type===type).sort((a,b)=>a.created-b.created||a.id.localeCompare(b.id));
+ const eligible=k=>!devices.length||devices.every(d=>!activeBindings().some(b=>b.key===k.id&&b.device===d));
+ if(type==='multi'){
+  for(const k of ks){if(!eligible(k))continue;const ls=candidateLots(k.id,o,target,direction);if(ls.reduce((n,l)=>n+freeLot(l),0)<qty)continue;let remaining=qty;const items=[];for(const l of ls){const q=Math.min(remaining,freeLot(l));if(q){items.push({lot:l.id,key:k.id,qty:q});remaining-=q}if(!remaining)break;}return items;}
+  throw Error('没有单个多设备密钥能完整满足本次数量及设备/来源条件；不能拼接其他密钥。');
+ }
+ const chosen=ks.filter(k=>candidateLots(k.id,o,target,direction).some(l=>freeLot(l)>=1));
+ if(chosen.length<qty)throw Error('符合条件的单设备密钥数量不足。');
+ // 当前单设备实例总容量为1，因此有空闲份额的实例不可能存在任何有效绑定。
+ return chosen.slice(0,qty).map(k=>({lot:candidateLots(k.id,o,target,direction)[0].id,key:k.id,qty:1}));
+}
+function validateNew(data){
+ if(!String(data.code||'').trim()||!String(data.name||'').trim())throw Error('必填项不能为空');
+ if(!softwareOptions.includes(data.software)||!['single','multi'].includes(data.type))throw Error('软件或密钥类型无效。');quantity(data.max);if(data.type==='single'&&data.max!==1)throw Error('单设备密钥容量必须为1。');
+ validateModelFields('key',data);if(S.fieldRules.key.unique&&S.keys.some(k=>!k.deleted&&k.code===data.code.trim()))throw Error('密钥编号重复（当前演示采用默认唯一配置）。');
+}
+function createKey(data){requireActive(actor);return transaction('新增密钥',()=>{validateNew(data);const id=nextId('KEY');S.keys.push({id,code:data.code.trim(),name:data.name.trim(),software:data.software,type:data.type,max:data.max,serial:data.serial||'',date:data.date||'',created:uid,createdWarehouse:actor,deleted:false,extra:{...(data.extra||{})}});S.lots.push({id:nextId('LT'),key:id,warehouse:actor,qty:data.max,parent:null});return id;});}
+function editableKey(id){const k=key(id);if(!k||k.deleted||held(id,actor)<=0)throw Error('密钥不在当前机构持有范围。');return k;}
+function editKey(id,data){return transaction('编辑密钥',()=>{const k=editableKey(id);data=Object.fromEntries(Object.entries(data).filter(([,v])=>v!==undefined));validateModelFields('key',{...k,...data,extra:{...k.extra,...data.extra}},id);for(const f of ['max','software','type','serial'])if(data[f]!==undefined&&data[f]!==k[f])throw Error('最大容量、软件类型、密钥类型和序列号创建后不可修改。');if(data.code!==undefined){if(!data.code.trim())throw Error('必填项不能为空');if(S.fieldRules.key.unique&&S.keys.some(x=>!x.deleted&&x.id!==id&&x.code===data.code.trim()))throw Error('密钥编号重复。');k.code=data.code.trim()}if(data.name!==undefined){if(!data.name.trim())throw Error('必填项不能为空');k.name=data.name.trim()}if(data.date!==undefined)k.date=data.date;if(data.extra!==undefined)k.extra={...k.extra,...data.extra};return k;});}
+function deleteKey(id){return transaction('删除密钥',()=>{const k=editableKey(id);if(S.contractKeys.some(r=>r.key===id))throw Error('该密钥仍关联合同，请先解除关联。');if(activeBindings().some(b=>b.key===id))throw Error('该密钥存在设备绑定，请先回收。');if(pending().some(t=>t.items.some(i=>i.key===id)))throw Error('该密钥存在在途调拨，请先完成或终止。');if(S.lots.some(l=>l.key===id&&l.warehouse!==actor&&l.qty>0))throw Error('其他机构仍持有份额，不能删除共同密钥。');for(const l of S.lots.filter(l=>l.key===id))l.qty=0;k.deleted=true;S.attachments=S.attachments.filter(a=>!(a.kind==='key'&&a.owner===id));});}
+function warehouseBusy(id){return S.lots.some(l=>l.warehouse===id&&l.qty>0)||activeBindings().some(b=>b.warehouse===id)||pending().some(t=>t.from===id||t.to===id)||S.warehouses.some(o=>o.parent===id&&o.status!=='deleted');}
+function createWarehouse(name,parent,manager){return transaction('新增机构',()=>{if(!name.trim()||!manager.trim())throw Error('必填项不能为空');if(parent!=='hq')throw Error('只支持总机构＋分机构二级结构，新增机构固定属于总机构。');requireActive('hq');const id=nextId('WH');S.warehouses.push({id,name:name.trim(),parent:'hq',manager:manager.trim(),status:'active'});return id;});}
+function updateWarehouse(id,name,manager){return transaction('编辑机构',()=>{requireActive(id);if(!name.trim()||!manager.trim())throw Error('必填项不能为空');warehouse(id).name=name.trim();warehouse(id).manager=manager.trim();});}
+function exitWarehouse(id,mode){return transaction(mode==='delete'?'删除机构':'停用机构',()=>{if(!warehouse(id)||warehouse(id).status==='deleted')throw Error('机构不存在。');if(!warehouse(id).parent)throw Error('根机构作为演示入口保留。');if(warehouseBusy(id))throw Error('机构仍有库存、占用、待接收调拨或未删除下级机构，不能停用或删除。');warehouse(id).status=mode==='delete'?'deleted':'inactive';});}
+function importRows(rows,mode){
+ const results=[];for(let i=0;i<rows.length;i++){const data=rows[i];try{if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).some(f=>!['code','name','software','type','max','serial','date','extra'].includes(f)))throw Error('仅允许密钥主数据字段，不能导入绑定、调拨或库存。');if(mode==='new'){createKey({...data,max:Number(data.max)});}else{const matches=visibleKeys(actor).filter(k=>k.code===data.code);if(matches.length!==1)throw Error('当前机构内没有唯一匹配的密钥编号。');const changes={name:data.name,date:data.date,...(data.extra?{extra:data.extra}:{})};for(const f of ['max','software','type','serial'])if(Object.hasOwn(data,f))changes[f]=f==='max'?Number(data[f]):data[f];editKey(matches[0].id,changes);}results.push({row:i+2,ok:true,message:'成功'})}catch(e){results.push({row:i+2,ok:false,message:e.message})}}
+ return results;
+}
+
+// V13：需求V4的增量业务模型。业务日期与系统审计时间分别保存。
+const today=()=>now().slice(0,10);
+const currentUser=()=>warehouse(actor).manager;
+const people=()=>[...new Set([...S.warehouses.map(w=>w.manager),'张敏','李华','王芳'])];
+function required(v){if(!String(v??'').trim())throw Error('必填项不能为空');return String(v).trim()}
+function validDate(v){required(v);if(!/^\d{4}-\d{2}-\d{2}$/.test(v)||new Date(v+'T00:00:00Z').toISOString().slice(0,10)!==v)throw Error('日期格式无效。');return v}
+function businessMeta(m={}){return {date:validDate(m.date),oa:required(m.oa),operator:required(m.operator),remark:String(m.remark||'')}}
+const keyFree=(id,o=actor)=>S.lots.filter(l=>l.key===id&&l.warehouse===o).reduce((n,l)=>n+freeLot(l),0);
+const contract=id=>S.contracts.find(c=>c.id===id&&!c.deleted);
+const contractNames=id=>S.contractKeys.filter(r=>r.key===id).map(r=>contract(r.contract)?.name).filter(Boolean);
+const contractColumns=[['code','合同编号'],['name','合同名称'],['status','合同状态'],['start','开始日期'],['end','结束日期'],['owner','负责人'],['supplier','供应商'],['amount','合同金额'],['remark','备注'],['updated','更新时间']];
+let selectedKeys=new Set(),detailKey=null,detailContract=null,detailTab='basic',contractStatus='',contractOwner='',contractStart='',contractEnd='',contractSort='desc';
+function extendSeed(){
+ S.contracts=Array.from({length:24},(_,i)=>({id:'CT-'+(i+1),code:'HT-2026-'+String(i+1).padStart(3,'0'),name:['办公软件采购合同','设计软件许可合同','终端设备采购合同','软件维护服务合同'][i%4]+(i>3?'（'+(i+1)+'）':''),status:['生效中','草稿','已到期','已终止'][i%4],start:'2026-01-01',end:i%4===2?'2026-06-30':'2027-12-31',owner:['张敏','李华','王芳'][i%3],supplier:['办公软件供应商','设计软件供应商','设备供应商'][i%3],amount:String((i+1)*12000)+'.00',remark:i===0?'Office 授权采购，可关联多个密钥。':'',created:'2026-11-01 09:00:00',updated:'2026-11-02 '+String(8+Math.floor(i/6)).padStart(2,'0')+':'+String(i%6).padStart(2,'0')+':00',deleted:false,extra:{}}));
+ S.contractKeys=[{contract:'CT-1',key:'K1'},{contract:'CT-1',key:'K2'},{contract:'CT-2',key:'C1'}];
+ S.contractDevices=[{contract:'CT-3',device:'PC-001'},{contract:'CT-3',device:'PC-002'}];
+ S.attachments=[];initFieldManagement();S.operations=[];S.contractColumns=contractColumns.map(c=>c[0]);
+ S.transfers.forEach((t,i)=>{t.date=t.created.slice(0,10);t.oa='OA-2026-'+String(101+i);t.receiver=t.status==='accepted'?warehouse(t.to).manager:'';t.receivedDate=t.status==='accepted'?t.finished.slice(0,10):'';t.auditOperator=t.operator});
+ selectedKeys=new Set();detailKey=null;detailContract=null;detailTab='basic';contractStatus='';contractOwner='';contractStart='';contractEnd='';contractSort='desc';
+ installManual('Office',['K1'],['PC-001','PC-040'],{date:'2026-11-01',oa:'OA-2026-090',operator:currentUser(),remark:'演示已有安装，已删除设备仍可回收'},true);
+}
+function planManual(software,keyIds,deviceIds,allowInvalid=false){
+ requireActive(actor);if(!softwareOptions.includes(software))throw Error('软件无效。');
+ const ids=[...new Set(keyIds)],ds=[...new Set(deviceIds)];if(!ids.length||!ds.length)throw Error('必填项不能为空');
+ const ks=ids.map(id=>editableKey(id)).sort((a,b)=>a.created-b.created||a.id.localeCompare(b.id));
+ if(ks.some(k=>k.software!==software||keyFree(k.id)<=0))throw Error('所选密钥已不可用或软件不一致，请重新选择。');
+ if(ds.some(id=>!device(id)||(!allowInvalid&&device(id).status!=='active')))throw Error('只能新增安装到有效设备。');
+ // 二分匹配：避免简单贪心被既有密钥—设备绑定阻塞，匹配仅限手选范围。
+ const slots=ks.flatMap(k=>Array.from({length:Math.min(keyFree(k.id),ds.length)},()=>k.id));
+ if(slots.length<ds.length)throw Error('所选密钥可用名额不足，无法覆盖全部设备。');
+ const owner=Array(slots.length).fill(-1);
+ function match(di,seen){for(let si=0;si<slots.length;si++){if(seen.has(si)||activeBindings().some(b=>b.key===slots[si]&&b.device===ds[di]))continue;seen.add(si);if(owner[si]<0||match(owner[si],seen)){owner[si]=di;return true}}return false}
+ for(let di=0;di<ds.length;di++)if(!match(di,new Set()))throw Error('所选范围无法完成全部设备匹配，请调整密钥或设备。');
+ const result=ds.map(d=>({device:d})),used={};
+ owner.forEach((di,si)=>{if(di<0)return;const kid=slots[si];const l=S.lots.find(l=>l.key===kid&&l.warehouse===actor&&freeLot(l)>(used[l.id]||0));if(!l)throw Error('可用份额变化，请重试。');used[l.id]=(used[l.id]||0)+1;result[di]={device:ds[di],key:kid,lot:l.id}});return result;
+}
+function installManual(software,keyIds,deviceIds,meta,allowInvalid=false){const m=businessMeta(meta);return transaction('安装',()=>{
+ const assignments=planManual(software,keyIds,deviceIds,allowInvalid),batch=nextId('IN');
+ S.installs.unshift({id:batch,warehouse:actor,warehouseName:warehouse(actor).name,software,qty:assignments.length,time:now(),...m});
+ for(const a of assignments){const rid=nextId('IS'),bid=nextId('BD'),d=device(a.device),k=key(a.key);
+ S.bindings.push({id:bid,install:batch,record:rid,warehouse:actor,key:a.key,lot:a.lot,device:a.device,keyCode:k.code,deviceName:d.name,active:true,installedAt:now(),recoveredAt:null});
+ S.operations.unshift({id:rid,batch,warehouse:actor,way:'安装',source:null,binding:bid,software,key:a.key,keyCode:k.code,device:d.id,deviceName:d.name,status:'使用中',time:now(),auditOperator:currentUser(),...m});
+ }return batch;
+})}
+function recoverRecords(recordIds,meta){const m=businessMeta(meta);return transaction('回收',()=>{
+ if(!recordIds.length)throw Error('必填项不能为空');const rs=[...new Set(recordIds)].map(id=>S.operations.find(r=>r.id===id));
+ if(rs.some(r=>!r||r.warehouse!==actor||r.way!=='安装'))throw Error('无当前机构安装记录的回收权限。');
+ if(rs.some(r=>r.status!=='使用中'||!S.bindings.find(b=>b.id===r.binding)?.active))throw Error('安装已回收，请查看对应回收记录。');
+ const batch=nextId('RB');for(const r of rs){const b=S.bindings.find(b=>b.id===r.binding);b.active=false;b.recoveredAt=now();b.recoveryId=nextId('RE');r.status='已回收';
+ S.operations.unshift({id:b.recoveryId,batch,warehouse:actor,way:'回收',source:r.id,binding:b.id,software:r.software,key:r.key,keyCode:r.keyCode,device:r.device,deviceName:r.deviceName,status:'已完成',time:now(),auditOperator:currentUser(),...m});}return rs.length;
+})}
+function sendTransfer(software,type,qty,target,meta){const m=businessMeta(meta);return transaction('发起调拨',()=>{const items=planRequest({software,type,qty,target,direction:'transfer'});const t={id:nextId('TR'),from:actor,to:target,direction:'transfer',software,type,qty,items,fromName:warehouse(actor).name,toName:warehouse(target).name,status:'pending',created:now(),finished:'',reason:'',receiver:'',receivedDate:'',auditOperator:currentUser(),...m};S.transfers.unshift(t);return t.id;});}
+function finishTransfer(id,action,reason='',receive={}){return transaction('调拨'+action,()=>{
+ const t=S.transfers.find(x=>x.id===id);if(!t)throw Error('调拨单不存在。');if(t.status!=='pending')throw Error('调拨单已处理，请刷新查看结果。');if(!['accept','reject','cancel'].includes(action))throw Error('操作无效。');if(action==='cancel'?t.from!==actor:t.to!==actor)throw Error('无此调拨单的处理权限。');requireActive(t.from);requireActive(t.to);
+ if(action==='accept'){const receiver=required(receive.receiver),date=validDate(receive.date);for(const item of t.items){const l=lot(item.lot);if(!l||l.warehouse!==t.from||freeLot(l,t.id)<item.qty)throw Error('预占发生异常，库存未变动。');l.qty-=item.qty;S.lots.push({id:nextId('LT'),key:item.key,warehouse:t.to,qty:item.qty,parent:l.id});}t.receiver=receiver;t.receivedDate=date;}
+ t.status={accept:'accepted',reject:'rejected',cancel:'cancelled'}[action];t.finished=now();t.processor=currentUser();t.reason=reason;return t;
+})}
+function saveContract(id,data){data=Object.fromEntries(Object.entries(data).filter(([name])=>['code','name','status','start','end','owner','supplier','amount','remark','extra'].includes(name)));return transaction(id?'编辑合同':'新增合同',()=>{
+ validateModelFields('contract',{...contract(id),...data},id);const code=required(data.code),name=required(data.name);if(S.fieldRules.contract.unique&&S.contracts.some(c=>!c.deleted&&c.id!==id&&c.code===code))throw Error('合同编号重复。');
+ if(!['草稿','生效中','已到期','已终止'].includes(data.status))throw Error('合同状态无效。');if(data.start)validDate(data.start);if(data.end)validDate(data.end);if(data.start&&data.end&&data.end<data.start)throw Error('结束日期不得早于开始日期。');if(data.amount&&!/^\d+(\.\d{1,2})?$/.test(data.amount))throw Error('金额须为非负数，最多两位小数。');
+ const c=id?contract(id):{id:nextId('CT'),created:now(),deleted:false};if(!c)throw Error('合同不存在。');Object.assign(c,data,{code,name,updated:now()});if(!id)S.contracts.unshift(c);return c.id;
+})}
+function addContractKeys(keyIds,contractIds){return transaction('关联合同',()=>{
+ const ks=[...new Set(keyIds)],cs=[...new Set(contractIds)];if(!ks.length||!cs.length)throw Error('必填项不能为空');ks.forEach(editableKey);if(cs.some(id=>!contract(id)))throw Error('合同已删除或不可用。');let added=0,skipped=0;
+ for(const kid of ks)for(const cid of cs){if(S.contractKeys.some(r=>r.key===kid&&r.contract===cid)){skipped++;continue}S.contractKeys.push({key:kid,contract:cid});added++}return {added,skipped};
+})}
+function removeContractKey(cid,kid){return transaction('解除合同—密钥关联',()=>{editableKey(kid);if(!contract(cid))throw Error('合同不存在。');S.contractKeys=S.contractKeys.filter(r=>r.key!==kid||r.contract!==cid)})}
+function addContractDevices(cid,ids){return transaction('关联设备',()=>{if(!contract(cid))throw Error('合同不存在。');if(!ids.length)throw Error('必填项不能为空');if(ids.some(id=>!device(id)||device(id).status==='deleted'))throw Error('所选设备已删除。');let added=0;for(const id of new Set(ids))if(!S.contractDevices.some(r=>r.contract===cid&&r.device===id)){S.contractDevices.push({contract:cid,device:id});added++}return added})}
+function deleteContract(id){return transaction('删除合同',()=>{const c=contract(id);if(!c)throw Error('合同不存在。');if(S.contractKeys.some(r=>r.contract===id)||S.contractDevices.some(r=>r.contract===id))throw Error('合同仍有关联设备或密钥，请先解除全部关联。');c.deleted=true;S.attachments=S.attachments.filter(a=>!(a.kind==='contract'&&a.owner===id));})}
+
+// V14：恢复原有独立字段管理页面；字段配置与业务主数据共用内存模型。
+const fieldTypes={text:'短字符',longtext:'长字符',integer:'整数',money:'金额',date:'日期',enum:'数据字典下拉',user:'用户引用'};
+const builtinFields={
+ contract:[{id:'contract_id',prop:'code',name:'合同编号',type:'text',required:true,numberRule:true},{id:'contract_name',prop:'name',name:'合同名称',type:'text',required:true},{id:'status',prop:'status',name:'合同状态',type:'enum',required:true,dictionary:['草稿','生效中','已到期','已终止'],constraint:'默认草稿；手工维护'},{id:'start_date',prop:'start',name:'开始日期',type:'date'},{id:'end_date',prop:'end',name:'结束日期',type:'date',constraint:'不得早于开始日期'},{id:'owner_id',prop:'owner',name:'负责人',type:'user'},{id:'remark',prop:'remark',name:'备注',type:'longtext'}],
+ key:[{id:'license_id',prop:'code',name:'密钥编号',type:'text',required:true,numberRule:true},{id:'license_name',prop:'name',name:'名称',type:'text',required:true},{id:'software_type_id',prop:'software',name:'软件名称',type:'enum',required:true,dictionary:softwareOptions,locked:true,constraint:'软件数据字典；创建后锁定'},{id:'license_type',prop:'type',name:'密钥类型',type:'enum',required:true,dictionary:['single','multi'],locked:true,constraint:'单设备/多设备；创建后锁定'},{id:'total_quantity',prop:'max',name:'最大容量',type:'integer',required:true,locked:true,constraint:'正整数；单设备固定1；创建后锁定'},{id:'license_key',prop:'serial',name:'序列号',type:'text',locked:true,constraint:'允许重复；创建后锁定'},{id:'expiration_date',prop:'date',name:'有效时间',type:'date',constraint:'人工维护，不触发到期逻辑'}]
+};
+function initFieldManagement(){
+ S.fieldRules={key:{unique:true,regex:'',maxLength:64},contract:{unique:true,regex:'',maxLength:64}};
+ S.contractFields=[{id:'contract_amount',prop:'amount',name:'合同金额',type:'money',active:true,required:false,unique:false,regex:'',maxLength:null},{id:'supplier',prop:'supplier',name:'供应商',type:'enum',active:true,required:false,unique:false,regex:'',dictionary:['办公软件供应商','设计软件供应商','设备供应商'],maxLength:null}];
+ S.keyFields=[{id:'edition',name:'版本',type:'text',active:true,required:false,unique:false,regex:'',maxLength:64}];
+ for(const k of S.keys)k.extra={edition:k.software==='Office'?'企业版':''};
+}
+const customFields=kind=>(kind==='contract'?S.contractFields:S.keyFields).filter(f=>!f.deleted);
+const modelFields=kind=>[...builtinFields[kind].map(f=>({...f,builtin:true,active:true})),...customFields(kind)];
+const valueOfField=(obj,f)=>f.prop?obj[f.prop]:obj.extra?.[f.id];
+const modelRecords=kind=>kind==='contract'?S.contracts:S.keys;
+const hasValue=v=>v!==''&&v!==null&&v!==undefined;
+function validateModelFields(kind,data,id){
+ const rules=S.fieldRules?.[kind];if(!rules)return;if(data.extra&&(typeof data.extra!=='object'||Array.isArray(data.extra)||Object.keys(data.extra).some(id=>!customFields(kind).some(f=>f.id===id&&!f.prop))))throw Error('自定义字段数据无效。');
+ for(const f of modelFields(kind).filter(f=>f.active)){
+  const v=valueOfField(data,f),r=f.numberRule?rules:f;
+  if(f.required&&(!hasValue(v)||(typeof v==='string'&&!v.trim())))throw Error(f.name+'：必填项不能为空');
+  if(!hasValue(v))continue;const text=String(v);
+  if(r.maxLength&&text.length>r.maxLength)throw Error(f.name+'超过最大长度 '+r.maxLength+'。');
+  if(r.regex&&!new RegExp(r.regex).test(text))throw Error(f.name+'不符合正则校验。');
+  if(r.unique&&modelRecords(kind).some(o=>!o.deleted&&o.id!==id&&String(valueOfField(o,f)??'')===text))throw Error(f.name+'重复。');
+  if(f.type==='integer'&&!/^-?\d+$/.test(text))throw Error(f.name+'必须为整数。');
+  if(f.type==='money'&&!/^\d+(\.\d{1,2})?$/.test(text))throw Error(f.name+'须为非负金额，最多两位小数。');
+  if(f.type==='date')validDate(text);
+  if(f.type==='enum'&&f.dictionary&&!f.dictionary.includes(v))throw Error(f.name+'不在数据字典选项内。');
+ }
+}
+function saveCustomField(kind,id,data){return transaction('保存字段配置',()=>{
+ const existing=id?customFields(kind).find(f=>f.id===id):null;if(id&&!existing)throw Error('字段不存在。');
+ const name=required(data.name),identifier=existing?.id||required(data.id);
+ if(!/^[a-z][a-z0-9_]*$/.test(identifier))throw Error('字段标识须使用英文小写字母、数字和下划线，且以字母开头。');
+ const storageNames=new Set(['id','extra','deleted','created_at','updated_at','created_by','updated_by','is_deleted','constructor','prototype',...modelFields(kind).map(f=>f.prop).filter(Boolean),...modelRecords(kind).flatMap(o=>Object.keys(o))]);if(!existing&&storageNames.has(identifier))throw Error('该标识由系统保留。');
+ if(modelFields(kind).some(f=>f.id!==id&&(f.id===identifier||f.name===name)))throw Error('字段名称或标识重复。');
+ if((kind==='contract'?S.contractFields:S.keyFields).some(f=>f.deleted&&f.id===identifier))throw Error('该字段标识已归档，请使用其他标识。');
+ const type=existing?.type||data.type;if(!['text','longtext','integer','money','date','enum'].includes(type))throw Error('字段类型无效。');
+ if(data.regex)try{new RegExp(data.regex)}catch(e){throw Error('正则表达式格式有误。')}
+ const maxLength=data.maxLength===''||data.maxLength==null?null:Number(data.maxLength);if(maxLength!==null&&(!Number.isSafeInteger(maxLength)||maxLength<1))throw Error('最大长度须为正整数。');
+ const dictionary=type==='enum'?[...new Set((data.dictionary||[]).map(v=>v.trim()).filter(Boolean))]:undefined;if(type==='enum'&&!dictionary.length)throw Error('数据字典选项不能为空。');
+ const f={...(existing||{}),id:identifier,name,type,required:!!data.required,unique:!!data.unique,regex:data.regex||'',maxLength,active:existing?existing.active:true,dictionary};
+ // 已有数据可保留，后续保存按新规则校验；不能移除仍被使用的字典值。
+ if(existing&&type==='enum'&&modelRecords(kind).some(o=>!o.deleted&&hasValue(valueOfField(o,existing))&&!dictionary.includes(valueOfField(o,existing))))throw Error('仍有数据使用被移除的字典选项，请保留该选项。');
+ if(f.unique){const values=modelRecords(kind).filter(o=>!o.deleted).map(o=>valueOfField(o,f)).filter(hasValue).map(String);if(new Set(values).size!==values.length)throw Error('现有字段值重复，无法启用唯一校验。');}if(existing)Object.assign(existing,f);else {const fs=kind==='contract'?S.contractFields:S.keyFields;fs.push(f);if(kind==='contract')S.contractColumns.push(identifier)}return identifier;
+})}
+function toggleCustomField(kind,id){return transaction('启停字段',()=>{const f=customFields(kind).find(f=>f.id===id);if(!f)throw Error('内置字段不可停用。');f.active=!f.active;return f.active})}
+function deleteCustomField(kind,id){return transaction('删除字段',()=>{const f=customFields(kind).find(f=>f.id===id);if(!f)throw Error('内置字段不可删除。');if(modelRecords(kind).some(o=>hasValue(valueOfField(o,f))))throw Error('字段仍有数据，请先处理数据；可停用并保留原值。');f.deleted=true;if(kind==='contract')S.contractColumns=S.contractColumns.filter(x=>x!==(f.prop||f.id));})}
+function saveNumberRule(kind,data){return transaction('配置编号校验',()=>{if(data.regex)try{new RegExp(data.regex)}catch(e){throw Error('正则表达式格式有误。')}const n=Number(data.maxLength);if(!Number.isSafeInteger(n)||n<1)throw Error('最大长度须为正整数。');if(data.unique){const codes=modelRecords(kind).filter(o=>!o.deleted).map(o=>o.code);if(new Set(codes).size!==codes.length)throw Error('现有编号重复，无法启用唯一校验。');}S.fieldRules[kind]={unique:!!data.unique,regex:data.regex||'',maxLength:n};})}
+
+// UI：继承V9外观；本版替换旧软件和合同操作逻辑，不复用旧用户授权写入口。
+const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const button=(text,call,cls='')=>'<button type="button" class="'+cls+'" onclick="'+call+'">'+text+'</button>';
+const tag=(text,good=false)=>'<span class="tag '+(good?'good':'')+'">'+esc(text)+'</span>';
+const options=(values,current,labels=values)=>values.map((v,i)=>'<option value="'+esc(v)+'" '+(v===current?'selected':'')+'>'+esc(labels[i])+'</option>').join('');
+const table=(heads,rows)=>'<div class="table-wrap"><table class="'+(['操作','演示操作'].includes(heads.at(-1))?'has-actions':'')+'"><thead><tr>'+heads.map(h=>'<th>'+h+'</th>').join('')+'</tr></thead><tbody>'+(rows.length?rows.map(r=>'<tr>'+r.map(c=>'<td>'+c+'</td>').join('')+'</tr>').join(''):'<tr><td class="empty" colspan="'+heads.length+'">暂无记录</td></tr>')+'</tbody></table></div>';
+const notice=text=>'<div class="annotations">'+text+'</div>';
+const timeCell=t=>esc(t||'--');
+function toast(text){$('toast').textContent=text;setTimeout(()=>{$('toast').textContent=''},4200)}
+let submitAction=null,busy=false;
+function modal(title,body,submit=null,label='确定'){$('modal-title').textContent=title;$('modal-body').innerHTML=body;$('modal-error').textContent='';$('modal-submit').hidden=!submit;$('modal-submit').textContent=label;$('modal-cancel').textContent=submit?'取消':'关闭';submitAction=submit;if(!$('dialog').open)$('dialog').showModal();}
+function closeDialog(){if(!busy){$('dialog').close();submitAction=null}}
+function validateModalFields(){let ok=true;document.querySelectorAll('.field-error').forEach(e=>e.remove());document.querySelectorAll('.invalid-field').forEach(e=>e.classList.remove('invalid-field'));document.querySelectorAll('#modal-body label').forEach(label=>{const control=label.querySelector('input:not([type=checkbox]),select,textarea');if(!control||control.disabled||!label.firstChild?.textContent.includes('*'))return;if(!String(control.value).trim()){ok=false;control.classList.add('invalid-field');const error=document.createElement('span');error.className='field-error';error.textContent='必填项不能为空';label.append(error)}});if(!ok){$('modal-error').textContent='必填项不能为空';$('modal-body .invalid-field')?.focus()}return ok;}
+function showError(e){$('modal-error').textContent=e.message||String(e);$('modal-error').focus()}
+$('modal-form').addEventListener('submit',async e=>{e.preventDefault();if(!submitAction||busy)return;if(!validateModalFields())return;busy=true;const submitLabel=$('modal-submit').textContent;$('modal-submit').disabled=true;$('modal-submit').textContent='提交中…';try{await new Promise(r=>setTimeout(r,150));const result=submitAction();if(result!==false){$('dialog').close();render();toast(typeof result==='string'?result:'操作成功，数据已同步。')}}catch(err){showError(err)}finally{busy=false;$('modal-submit').disabled=false;$('modal-submit').textContent=submitLabel}});
+$('dialog').addEventListener('cancel',e=>{e.preventDefault();closeDialog()});
+function switchActor(id){enterWarehouse(id)}
+const incomingCount=id=>pending().filter(t=>t.to===id).length;
+function renderWarehouses(){const rows=S.warehouses.filter(o=>o.status!=='deleted').sort((a,b)=>a.id==='hq'?-1:b.id==='hq'?1:a.name.localeCompare(b.name));
+ $('content').innerHTML='<div class="toolbar"><h2>机构列表</h2><span class="spacer"></span>'+button('新增','warehouseDialog()','primary')+'</div>'+notice('模板预置一个总机构，新增均为分机构。先进入机构查看密钥，在调拨记录中处理拨入和拨出。')+table(['机构名称','机构类型','负责人','状态','操作'],rows.map(o=>[esc(o.name)+(o.id==='hq'?' '+tag('固定置顶'):''),o.id==='hq'?'总机构':'分机构',esc(o.manager),tag(o.status==='active'?'启用':'停用',o.status==='active'),o.status==='active'?button('查看密钥',"enterWarehouse('"+o.id+"')",'link')+button('编辑',"warehouseDialog('"+o.id+"')",'link'):button('编辑',"warehouseDialog('"+o.id+"')",'link')]))+'<p class="foot">机构间可互相发起调拨。待接收数量不计入接收机构库存；进入机构为评审视角切换，不代表生产权限已验证。</p>';
+}
+function warehouseDialog(id){const o=id?warehouse(id):null;modal(o?'编辑机构':'新增机构','<div class="grid"><label>机构名称 *<input id="o-name" value="'+esc(o?.name||'')+'"></label><label>负责人 *<input id="o-manager" value="'+esc(o?.manager||'')+'"></label><label>机构类型<input disabled value="'+(o?.id==='hq'?'总机构':'分机构')+'"></label><label>所属总机构<input disabled value="'+(o?.id==='hq'?'--':esc(warehouse('hq').name))+'"></label></div>'+notice('沿用既有库存容器；新增固定为分机构，不提供多级上级选择。负责人交接不改变库存或在途。')+(o&&o.id!=='hq'?'<div class="toolbar">'+button(o.status==='inactive'?'启用机构':'停用机构',"warehouseToggle('"+id+"')")+button('删除机构',"warehouseExit('"+id+"','delete')",'danger')+'</div>':''),()=>{if(o)updateWarehouse(id,$('o-name').value,$('o-manager').value);else createWarehouse($('o-name').value,'hq',$('o-manager').value);return '机构已保存。';},'保存');}
+function warehouseToggle(id){try{if(warehouse(id).status==='inactive'){warehouse(id).status='active';S.audit.push({time:now(),actor,action:'启用机构'})}else exitWarehouse(id,'inactive');closeDialog();render();toast('机构状态已更新。')}catch(e){showError(e)}}
+function warehouseExit(id,mode){modal('确认删除该机构？','<p>删除操作不可撤回，请谨慎操作！</p><p>软件侧有持有容量、绑定或在途时不能删除；真实资产库存等共用机构删除条件由既有模块统一检查。</p>',()=>{exitWarehouse(id,mode);return '机构已软删除，历史保留。';},'删除');}
+function balanceGroups(){const result=[];for(const k of visibleKeys(actor)){let row=result.find(g=>g.software===k.software&&g.type===k.type);if(!row){row={software:k.software,type:k.type};result.push(row)}}return result;}
+function renderBalance(){const groups=balanceGroups();$('content').innerHTML='<div class="toolbar"><h2>'+esc(warehouse(actor).name)+' · 授权余额</h2><span class="spacer"></span>'+button('新增','keyDialog()','primary')+'</div>'+notice('库存总数＝本机构持有容量－设备占用；当前可分配＝库存总数－转出在途。有效时间仅供人工维护，不影响数量及系统选密钥。')+table(['软件类型','密钥类型','持有容量','设备占用','库存总数','转出在途','当前可分配','操作'],groups.map(g=>{const m=metrics(g.software,g.type);return [esc(g.software),typeLabel(g.type),m.held,m.used?button(String(m.used),"currentBindings('"+g.software+"','"+g.type+"')",'link'):'0',m.stock,m.transit,m.available,button('安装',"installDialog('"+g.software+"','"+g.type+"')",'link')+button('调拨',"transferDialog('"+g.software+"','"+g.type+"')",'link')+button('明细',"keyDrill('"+g.software+"','"+g.type+"')",'link')]}))+'<p class="foot">调拨由系统自动选取：单设备可多把，多设备须单把满足。安装由用户手选同软件的多把密钥，可合并名额或混搭类型，再由系统匹配设备。</p>';
+}
+function keyDrill(software,type){tab='instances';search='';keyFilter={software,type};pageIndex=1;render()}
+function keyMatches(k){return (!keyFilter||k.software===keyFilter.software&&k.type===keyFilter.type)&&(k.code+k.name+k.software+typeLabel(k.type)).includes(search)}
+function filterbar(placeholder){return '<div class="toolbar"><input id="query" aria-label="搜索" placeholder="'+placeholder+'" value="'+esc(search)+'" onkeydown="if(event.key===\'Enter\'){applySearch()}">'+button('查询','applySearch()')+button('重置',"search='';keyFilter=null;selectedKeys.clear();pageIndex=1;render()")+'<span class="spacer"></span></div>';}
+function pager(total){const pages=Math.max(1,Math.ceil(total/20));pageIndex=Math.min(pageIndex,pages);return '<div class="toolbar foot">共 '+total+' 条 · 每页20条<span class="spacer"></span>'+button('上一页',"selectedKeys.clear();pageIndex=Math.max(1,pageIndex-1);render()")+'第 '+pageIndex+' / '+pages+' 页'+button('下一页',"selectedKeys.clear();pageIndex=Math.min("+pages+",pageIndex+1);render()")+'</div>';}
+function keyTypeChanged(){const one=$('k-type').value==='single';$('k-max').value=one?1:10;$('k-max').disabled=one;}
+function bindingRows(bs,selectable){return bs.map(b=>{const d=device(b.device);return [...(selectable?['<input type="checkbox" name="recover-binding" value="'+b.id+'" '+(!b.active?'disabled':'')+' aria-label="选择 '+b.device+'">']:[]),esc(b.device)+(d?.status==='deleted'?' '+tag('已删除'):d?.status==='inactive'?' '+tag('已失效'):''),esc(b.deviceName||d?.name||'设备已删除'),esc(b.keyCode||key(b.key)?.code||'--'),tag(b.active?'使用中':'已回收',b.active),timeCell(b.recoveredAt)];});}
+const transferStatuses={pending:'在途',accepted:'已接收',rejected:'已拒收',cancelled:'已撤销'};
+function renderDevices(){const ds=S.devices.filter(d=>(d.id+d.name).includes(search));const foot=pager(ds.length);$('content').innerHTML=notice('仅用于评审设备生命周期。下面动作模拟底座变化，不代表本模块新增真实设备管理能力。所有机构的有效设备可安装，设备删除后已有绑定仍可回收。')+filterbar('支持设备编号、名称搜索')+table(['设备编号','设备名称','所属机构','状态','演示操作'],ds.slice((pageIndex-1)*20,pageIndex*20).map(d=>[button(esc(d.id),"deviceContracts('"+d.id+"')",'link'),esc(d.name),esc(warehouse(d.warehouse)?.name||'--'),tag({active:'有效',inactive:'失效',deleted:'已删除'}[d.status]),button('转机构',"deviceMove('"+d.id+"')",'link')+button(d.status==='inactive'?'恢复有效':'模拟失效',"deviceStatus('"+d.id+"','"+(d.status==='inactive'?'active':'inactive')+"')",'link')+button('模拟删除',"deviceStatus('"+d.id+"','deleted')",'link')]))+foot;}
+function deviceContracts(id){const ds=S.contractDevices.filter(r=>r.device===id&&contract(r.contract));modal('设备关联合同 · '+id,table(['合同编号','合同名称','状态'],ds.map(r=>{const c=contract(r.contract);return [esc(c.code),esc(c.name),tag(c.status)]}))+notice('设备侧只读反查合同，关联维护在合同侧完成。'),null)}
+function deviceStatus(id,status){const d=device(id);if(d.status==='deleted'&&status!=='deleted')return toast('已删除设备不提供恢复；已有绑定可直接回收。');d.status=status;render();toast('设备状态已变化，绑定及占用保持不变。')}
+function deviceMove(id){const d=device(id);if(d.status==='deleted')return toast('已删除设备不能调整机构。');modal('模拟设备转机构','<label>目标机构<select id="dev-warehouse">'+options(S.warehouses.filter(o=>o.status==='active').map(o=>o.id),d.warehouse,S.warehouses.filter(o=>o.status==='active').map(o=>o.name))+'</select></label>',()=>{d.warehouse=$('dev-warehouse').value;return '设备机构已变化，密钥绑定不变。';});}
+function importDialog(){modal('导入密钥主数据',notice('仅演示主数据逐行导入。JSON粘贴用于本地验证；真实XLSX上传与SaaS映射待工程接入。不导入绑定、调拨或历史。')+'<label>模式<select id="import-mode"><option value="new">导入新增</option><option value="update">导入更新（当前机构编号匹配）</option></select></label><label>主数据行（JSON数组）<textarea id="import-json" rows="7" spellcheck="false">'+esc(JSON.stringify([{code:'IMPORT-DEMO-01',name:'导入办公许可',software:'Office',type:'multi',max:5,serial:'DEMO-IMPORT',date:''}],null,2))+'</textarea></label>',()=>{let rows;try{rows=JSON.parse($('import-json').value)}catch(e){throw Error('JSON格式无效，请检查数组。')}if(!Array.isArray(rows)||!rows.length)throw Error('至少提供一行主数据。');const results=importRows(rows,$('import-mode').value);$('modal-body').innerHTML=table(['行号','结果','说明'],results.map(r=>[r.row,r.ok?'成功':'失败',esc(r.message)]));$('modal-submit').hidden=true;$('modal-cancel').textContent='关闭';submitAction=null;toast('导入逐行处理完成，请关闭后刷新台账。');render();return false;});}
+function resetDemo(){modal('重置演示数据？','<p>将恢复初始机构、库存和设备，清除本轮内存操作。</p>',()=>{seed();return '演示数据已重置。';});}
+// V13 UI：沿用既有原型布局，合同与软件共用内存状态。
+const field=(label,control)=>'<label>'+label+control+'</label>';
+const input=(id,value='',type='text',extra='')=>'<input id="'+id+'" type="'+type+'" value="'+esc(value)+'" '+extra+'>';
+const userSelect=(id,value=currentUser())=>'<div class="person-wrapper"><select id="'+id+'" aria-label="人员">'+options(people(),value)+'</select></div>';
+const readonly=(label,value)=>field(label,input('',value??'--','text','disabled'));
+function metaFields(prefix,way){return '<div class="grid">'+field('操作日期 *',input(prefix+'-date',today(),'date'))+readonly('操作方式',way)+field('OA流程编号 *',input(prefix+'-oa'))+field('操作人 *',userSelect(prefix+'-person'))+'</div>';}
+const readMeta=p=>({date:$(p+'-date').value,oa:$(p+'-oa').value,operator:$(p+'-person').value,remark:$(p+'-remark')?.value||''});
+function render(){
+ if(!warehouse(actor)||warehouse(actor).status!=='active')actor='hq';$('actor').textContent=warehouse(actor).name;
+ $('nav').innerHTML='<div class="menu-group">软件密钥管理</div>'+button('机构列表',"go('warehouses')",['warehouses','keys','keydetail'].includes(view)?'active':'')+button('密钥字段配置',"openFields('key')",view==='keyFields'?'active':'')+'<div class="menu-group">合同管理</div>'+button('合同台账',"go('contract')",['contract','contractdetail'].includes(view)?'active':'')+button('合同字段配置',"openFields('contract')",view==='contractFields'?'active':'')+'<div class="menu-group">评审工具</div>'+button('设备状态演示',"go('devices')",view==='devices'?'active':'')+button('交付说明',"go('guide')",view==='guide'?'active':'');
+ const titles={keyFields:'密钥字段配置',contractFields:'合同字段配置',warehouses:'机构列表',keys:warehouse(actor).name+' · 软件密钥',keydetail:'密钥详情',devices:'设备状态演示',guide:'交付说明',contract:'合同台账',contractdetail:'合同详情'};
+ const hint=lastTransferHint&&view==='keys'?'<div class="notice transfer-success">已拨出，等待 '+esc(warehouse(lastTransferHint.to).name)+' 接收。请进入接收机构的“调拨记录”处理。</div>':'';
+ const crumb=view==='contractdetail'?button('合同管理',"go('contract')",'link')+' / 合同详情':view==='keydetail'?button('机构列表',"go('warehouses')",'link')+' / '+button('密钥明细',"view='keys';tab='instances';render()",'link')+' / 密钥详情':view==='keys'?button('机构列表',"go('warehouses')",'link')+' / '+esc(warehouse(actor).name):esc(titles[view]);
+ $('main').innerHTML='<div class="page-header page-header--itsm"><div class="crumb">资产管理 / '+crumb+'</div><div class="toolbar"><h1>'+esc(titles[view])+'</h1><span class="spacer"></span></div></div><div class="prototype-note">原型 V15 · 本地内存演示，刷新还原 · 机构入口模拟对应操作视角</div>'+hint+(view==='keys'?'<div class="warehouse-summary"><span>当前机构：<strong>'+esc(warehouse(actor).name)+'</strong></span><span>机构类型：'+(actor==='hq'?'总机构':'分机构')+'</span><span class="hint">接收、拒收、撤销统一在调拨记录中处理。</span></div><div class="tabs" role="tablist">'+[['balance','授权余额'],['instances','密钥明细'],['installs','安装记录'],['transfers','调拨记录']].map(([id,name])=>'<button type="button" role="tab" aria-selected="'+(tab===id)+'" class="'+(tab===id?'active':'')+'" onclick="switchTab(\''+id+'\')">'+name+'</button>').join('')+'</div>':'')+'<div class="card group-panel" id="content"></div>';
+ ({keyFields:()=>renderFields('key'),contractFields:()=>renderFields('contract'),warehouses:renderWarehouses,keys:()=>({balance:renderBalance,instances:renderKeys,installs:renderInstalls,transfers:renderTransfers}[tab]||renderBalance)(),keydetail:renderKeyDetail,devices:renderDevices,contract:renderContracts,contractdetail:renderContractDetail,guide:renderGuide}[view]||renderGuide)();
+}
+function go(v){view=v;search='';keyFilter=null;pageIndex=1;selectedKeys.clear();lastTransferHint=null;render()}
+function switchTab(t){tab=t;search='';keyFilter=null;pageIndex=1;selectedKeys.clear();render()}
+function enterWarehouse(id,nextTab='balance'){if(!warehouse(id)||warehouse(id).status!=='active')return toast('机构已停用或不存在。');actor=id;view='keys';tab=nextTab==='inbox'?'transfers':nextTab;search='';keyFilter=null;lastTransferHint=null;pageIndex=1;selectedKeys.clear();render()}
+function applySearch(){search=$('query').value.trim();pageIndex=1;selectedKeys.clear();render()}
+function renderKeys(){const all=visibleKeys(actor).filter(keyMatches),foot=pager(all.length),rows=all.slice((pageIndex-1)*20,pageIndex*20);selectedKeys=new Set([...selectedKeys].filter(id=>all.some(k=>k.id===id)));
+ $('content').innerHTML=(keyFilter?notice('余额下钻：'+esc(keyFilter.software)+' / '+typeLabel(keyFilter.type)):'')+filterbar('支持编号、名称、软件类型搜索')+'<div class="toolbar">'+button('新增','keyDialog()','primary')+button('导入','importDialog()')+button('导出','exportKeys()')+button('批量关联合同','batchContractDialog()')+'<span class="spacer"></span><span id="key-selected">本页已选 '+selectedKeys.size+' 条（仅本页）</span></div>'+table(['<input id="key-select-page" type="checkbox" aria-label="选择本页密钥" onchange="selectKeyPage(this.checked)" '+(!rows.length?'disabled':'')+'>','密钥编号 / 名称','软件名称','密钥类型','本机构持有','设备占用','当前可分配','关联合同',...customFields('key').filter(f=>f.active).map(f=>esc(f.name)),'操作'],rows.map(k=>['<input type="checkbox" name="ledger-key" aria-label="选择 '+esc(k.code)+'" value="'+k.id+'" '+(selectedKeys.has(k.id)?'checked':'')+' onchange="toggleKey(this.value,this.checked)">',button(esc(k.code),"keyDetail('"+k.id+"')",'link')+'<br><small>'+esc(k.name)+'</small>',esc(k.software),typeLabel(k.type),held(k.id,actor),activeBindings().filter(b=>b.key===k.id&&b.warehouse===actor).length,keyFree(k.id),esc(contractNames(k.id).join('、')||'--'),...keyCustomCells(k),button('编辑',"keyDialog('"+k.id+"')",'link')+button('删除',"keyDelete('"+k.id+"')",'link danger')]))+foot;syncKeyPageCheck();
+}
+function toggleKey(id,checked){checked?selectedKeys.add(id):selectedKeys.delete(id);$('key-selected').textContent='本页已选 '+selectedKeys.size+' 条';syncKeyPageCheck()}
+function syncKeyPageCheck(){const boxes=[...document.querySelectorAll('[name=ledger-key]')],head=$('key-select-page');if(!head)return;const n=boxes.filter(e=>e.checked).length;head.checked=!!boxes.length&&n===boxes.length;head.indeterminate=n>0&&n<boxes.length}
+function selectKeyPage(checked){document.querySelectorAll('[name=ledger-key]').forEach(e=>{e.checked=checked;toggleKey(e.value,checked)})}
+function batchContractDialog(){if(!selectedKeys.size)return toast('请至少选择一条密钥');keyContractsDialog([...selectedKeys])}
+function keyDetail(id){try{editableKey(id);detailKey=id;detailTab='basic';view='keydetail';render()}catch(e){toast(e.message)}}
+function detailTabs(items){return '<div class="tabs">'+items.map(([id,name])=>button(name,"detailTab='"+id+"';render()",detailTab===id?'active':'')).join('')+'</div>'}
+function renderKeyDetail(){let k;try{k=editableKey(detailKey)}catch(e){view='keys';tab='instances';return render()}
+ $('content').innerHTML='<div class="detail-header toolbar"><h2 class="detail-title">'+esc(k.name)+' <small>'+esc(k.code)+'</small></h2><span class="spacer"></span>'+button('编辑',"keyDialog('"+k.id+"')",'primary')+'</div>'+detailTabs([['basic','基本信息'],['contracts','关联合同']])+(detailTab==='basic'?table(['字段','内容'],[['密钥编号',esc(k.code)],['名称',esc(k.name)],['软件名称',esc(k.software)],['密钥类型',typeLabel(k.type)],['序列号',esc(k.serial||'--')],['最大容量',k.max],['本机构持有',held(k.id,actor)],['当前可分配',keyFree(k.id)],['有效时间',esc(k.date||'--')],...fieldDetailRows('key',k)])+attachmentSection('key',k.id):'<div class="toolbar">'+button('关联合同',"keyContractsDialog(['"+k.id+"'])",'primary')+'</div>'+table(['合同编号','合同名称','合同状态','操作'],S.contractKeys.filter(r=>r.key===k.id&&contract(r.contract)).map(r=>{const c=contract(r.contract);return [esc(c.code),button(esc(c.name),"openContract('"+c.id+"')",'link'),tag(c.status),button('解除',"unlinkContractKey('"+c.id+"','"+k.id+"')",'link')]})));
+}
+function checked(name){return [...document.querySelectorAll('input[name="'+name+'"]:checked')].map(e=>e.value)}
+function filterChoices(q,cls){document.querySelectorAll('.'+cls).forEach(e=>e.hidden=!e.textContent.toLowerCase().includes(q.toLowerCase()))}
+function keyDelete(id){let k;try{k=editableKey(id)}catch(e){return toast(e.message)}const blocked=activeBindings().some(b=>b.key===id)||pending().some(t=>t.items.some(i=>i.key===id))||S.lots.some(l=>l.key===id&&l.warehouse!==actor&&l.qty>0)||S.contractKeys.some(r=>r.key===id);modal('删除提示','<div class="refer-content"><div class="data-content"><div class="data-title">查询已完成</div><p>'+(blocked?'该密钥仍有设备绑定、在途、他机构持有或合同关联，请先处理相关业务。':'该密钥未被引用，但删除后将不可恢复，请谨慎操作。')+'</p>'+(!blocked?'<div class="data-title">是否确认删除该密钥？</div>':'')+'</div></div>',blocked?null:()=>{deleteKey(id);return '密钥已软删除，历史保留。';},'删除')}
+
+function invalidateInstallPreview(){if($('install-preview'))$('install-preview').innerHTML=''}
+function renderInstalls(){const rs=S.operations.filter(r=>r.warehouse===actor&&(r.id+r.oa+r.software+r.device+r.keyCode+r.way+r.status).includes(search));const foot=pager(rs.length);
+ $('content').innerHTML=filterbar('支持OA编号、软件、设备、密钥、状态搜索')+'<div class="toolbar">'+button('安装','installDialog()','primary')+button('批量回收','openSelectedRecovery()')+'<span class="hint">回收会新增一条记录，并同步原安装状态及库存。</span></div>'+table(['选择','操作日期','操作方式','OA流程编号','安装记录','软件名称','密钥信息','状态','安装设备','操作人','操作'],rs.slice((pageIndex-1)*20,pageIndex*20).map(r=>['<input type="checkbox" name="recover-record" value="'+r.id+'" aria-label="选择 '+r.id+'" '+(r.way!=='安装'||r.status!=='使用中'?'disabled':'')+'>',esc(r.date),r.way,esc(r.oa),r.source?button(esc(r.source),"operationDetail('"+r.source+"')",'link'):'--',esc(r.software),esc(r.keyCode),tag(r.status,r.status==='使用中'),esc(r.device)+(device(r.device)?.status==='deleted'?' '+tag('已删除'):device(r.device)?.status==='inactive'?' '+tag('已失效'):''),esc(r.operator),button('查看',"operationDetail('"+r.id+"')",'link')+(r.way==='安装'&&r.status==='使用中'?button('回收设备',"recoveryDialog(['"+r.id+"'])",'link'):'')]))+foot;
+}
+function openSelectedRecovery(){const ids=checked('recover-record');if(!ids.length)return toast('请至少选择一条使用中的安装记录');recoveryDialog(ids)}
+function recoveryDialog(ids){const rs=ids.map(id=>S.operations.find(r=>r.id===id));if(rs.some(r=>!r||r.warehouse!==actor||r.way!=='安装'||r.status!=='使用中'))return toast('所选安装记录已不可回收。');modal(ids.length>1?'批量回收 · '+ids.length+' 条安装':'回收设备 · '+rs[0].device,metaFields('re','回收')+notice(ids.length===1?'本次仅回收设备 '+esc(rs[0].device)+' 对应的这一次安装，释放1个占用名额，其他设备不受影响。':'本次仅处理下列已选安装记录，其他设备不受影响。')+field('安装记录 *（固定，不可更换）','<textarea disabled rows="2">'+esc(ids.join('、'))+'</textarea>')+table(['原安装记录','软件名称','密钥信息','安装设备'],rs.map(r=>[esc(r.id),esc(r.software),esc(r.keyCode),esc(r.device)]))+field('备注','<textarea id="re-remark" rows="2"></textarea>')+notice('提交后新增独立回收记录，原安装变为已回收；名额返还原占用机构。'),()=>{const n=recoverRecords(ids,readMeta('re'));return '已回收 '+n+' 条安装，新增 '+n+' 条回收记录。';});}
+function operationDetail(id){const r=S.operations.find(r=>r.id===id);if(!r||r.warehouse!==actor)return toast('无此记录权限。');const recovery=S.operations.find(x=>x.source===r.id&&x.way==='回收');modal('操作记录详情',table(['字段','内容'],[['记录编号',esc(r.id)],['操作日期',esc(r.date)],['操作方式',r.way],['OA流程编号',esc(r.oa)],['安装记录',r.source?esc(r.source):'--'],['软件名称',esc(r.software)],['密钥信息',esc(r.keyCode)],['状态',r.status],['安装设备',esc(r.device)+' · '+esc(r.deviceName)],['操作人',esc(r.operator)],['备注',esc(r.remark||'--')],['实际操作人',esc(r.auditOperator)],['实际操作时间',r.time]])+(r.way==='安装'&&r.status==='使用中'?'<div class="toolbar">'+button('回收该设备',"recoveryDialog(['"+r.id+"'])",'primary')+'</div>':recovery?notice('本次安装已回收。回收记录：'+button(esc(recovery.id),"operationDetail('"+recovery.id+"')",'link')):''),null)}
+
+function installDetails(id){const rs=S.operations.filter(r=>r.batch===id&&r.warehouse===actor&&r.way==='安装');if(!rs.length)return toast('无此安装记录。');recoveryDialog(rs.filter(r=>r.status==='使用中').map(r=>r.id))}
+function currentBindings(software,type){const rs=S.operations.filter(r=>r.warehouse===actor&&r.way==='安装'&&r.status==='使用中'&&r.software===software&&key(r.key)?.type===type);modal('当前设备占用 · '+software,table(['安装记录','安装设备','密钥信息','操作'],rs.map(r=>[esc(r.id),esc(r.device),esc(r.keyCode),button('回收设备',"recoveryDialog(['"+r.id+"'])",'link')])),null)}
+function transferDialog(software,type){const ids=S.warehouses.filter(o=>o.status==='active'&&o.id!==actor).map(o=>o.id);if(!ids.length)return toast('暂无其他有效机构。');modal('拨出 · '+software+' / '+typeLabel(type),'<div class="grid">'+field('调拨日期 *',input('tr-date',today(),'date'))+field('OA流程编号 *',input('tr-oa'))+readonly('调拨方式','拨出')+readonly('软件名称',software)+field('数量 *',input('tr-qty',1,'number','min="1" step="1"'))+field('调拨人 *',userSelect('tr-person'))+field('对方机构名称 *','<select id="tr-target">'+options(ids,ids[0],ids.map(id=>warehouse(id).name))+'</select>')+readonly('当前状态','在途')+'</div>'+notice('当前可分配 '+metrics(software,type).available+'。提交自动选密钥并预占名额；单设备可选多把，多设备须单把满足整单，不拼接或混搭。接收人在拨入方确认时填写。'),()=>{const to=$('tr-target').value;const id=sendTransfer(software,type,Number($('tr-qty').value),to,{date:$('tr-date').value,oa:$('tr-oa').value,operator:$('tr-person').value});lastTransferHint={id,to};return '已拨出，等待接收机构在调拨记录中确认。';});}
+function transferRow(t){return [esc(t.date),esc(t.oa),t.from===actor?'拨出':'拨入',esc(t.software),t.qty,esc(t.operator),esc(t.from===actor?t.toName:t.fromName),tag(transferStatuses[t.status],t.status==='accepted'),esc(t.receiver||'--'),esc(t.receivedDate||'--')]}
+function renderTransfers(){const ts=S.transfers.filter(t=>(t.from===actor||t.to===actor)&&(t.id+t.oa+t.software+transferStatuses[t.status]).includes(search)),foot=pager(ts.length);$('content').innerHTML=filterbar('支持OA编号、调拨单号、软件、状态搜索')+notice('在途拨入可整单接收或拒收；在途拨出可撤销。接收成功后，双方记录同步接收人、接收日期和已接收状态。')+table(['调拨日期','OA流程编号','调拨方式','软件名称','数量','调拨人','对方机构名称','当前状态','接收人','接收日期','操作'],ts.slice((pageIndex-1)*20,pageIndex*20).map(t=>[...transferRow(t),button('查看',"transferDetails('"+t.id+"')",'link')+(t.status==='pending'?(t.to===actor?button('接收',"transferAction('"+t.id+"','accept')",'link')+button('拒收',"transferAction('"+t.id+"','reject')",'link'):button('撤销',"transferAction('"+t.id+"','cancel')",'link')):'')]))+foot}
+function transferAction(id,action){const t=S.transfers.find(x=>x.id===id);if(!t||t.from!==actor&&t.to!==actor)return toast('无此调拨记录权限。');const label={accept:'接收',reject:'拒收',cancel:'撤销'}[action];modal(label+'调拨单',table(['调拨日期','OA流程编号','调拨方式','软件名称','数量','调拨人','对方机构名称','当前状态','接收人','接收日期'],[transferRow(t)])+(action==='accept'?'<div class="grid">'+field('接收人 *',userSelect('receive-person'))+field('接收日期 *',input('receive-date',today(),'date'))+'</div>'+notice('整单接收后转移库存。业务日期可修改，不改变本次实际生效时间。'):field('原因（选填）','<textarea id="tr-reason"></textarea>')+notice('处理后仅释放拨出方的在途预占，双方持有不变。')),()=>{finishTransfer(id,action,$('tr-reason')?.value||'',action==='accept'?{receiver:$('receive-person').value,date:$('receive-date').value}:{});return '调拨单已'+label+'，双方记录已同步。';});}
+function transferDetails(id){const t=S.transfers.find(x=>x.id===id);if(!t||t.from!==actor&&t.to!==actor)return toast('无此记录权限');modal('调拨记录详情',table(['字段','内容'],[['调拨单号',esc(t.id)],['调拨日期',t.date],['OA流程编号',esc(t.oa)],['调拨方式',t.from===actor?'拨出':'拨入'],['软件名称',esc(t.software)],['密钥类型',typeLabel(t.type)],['数量',t.qty],['调拨人',esc(t.operator)],['对方机构名称',esc(t.from===actor?t.toName:t.fromName)],['当前状态',transferStatuses[t.status]],['接收人',esc(t.receiver||'--')],['接收日期',esc(t.receivedDate||'--')],['实际发起时间',t.created],['实际处理时间',t.finished||'--'],['原因',esc(t.reason||'--')]])+notice('历史保留交易事实，不穿透对方当前密钥或设备。'),null)}
+const allContractColumns=()=>[...contractColumns.filter(([id])=>!S.contractFields.some(f=>f.prop===id&&(f.deleted||!f.active))).map(([id,name])=>[id,customFields('contract').find(f=>f.prop===id)?.name||name]),...customFields('contract').filter(f=>f.active&&!f.prop).map(f=>[f.id,f.name])];
+const contractValue=(c,id)=>c[id]??c.extra?.[id]??'';
+function filteredContracts(){return S.contracts.filter(c=>!c.deleted&&(c.code+c.name).includes(search)&&(!contractStatus||c.status===contractStatus)&&(!contractOwner||c.owner===contractOwner)&&(!contractStart||c.start>=contractStart)&&(!contractEnd||c.end&&c.end<=contractEnd)).sort((a,b)=>contractSort==='desc'?b.updated.localeCompare(a.updated):a.updated.localeCompare(b.updated))}
+function contractFilters(){search=$('query').value.trim();contractStatus=$('ct-status').value;contractOwner=$('ct-owner').value;contractStart=$('ct-start').value;contractEnd=$('ct-end').value;pageIndex=1;render()}
+function resetContractFilters(){search='';contractStatus='';contractOwner='';contractStart='';contractEnd='';pageIndex=1;render()}
+function renderContracts(){const cs=filteredContracts(),foot=pager(cs.length),cols=allContractColumns().filter(([id])=>S.contractColumns.includes(id));$('content').innerHTML='<div class="toolbar"><input id="query" placeholder="支持合同编号、名称搜索" value="'+esc(search)+'" onkeydown="if(event.key===\'Enter\')contractFilters()"><select id="ct-status" aria-label="合同状态">'+options(['','草稿','生效中','已到期','已终止'],contractStatus,['全部状态','草稿','生效中','已到期','已终止'])+'</select><select id="ct-owner" aria-label="负责人">'+options(['',...people()],contractOwner,['全部负责人',...people()])+'</select>'+'<span class="hint">开始日期 ≥</span>'+input('ct-start',contractStart,'date','aria-label="开始日期下限" title="开始日期不早于"')+'<span class="hint">结束日期 ≤</span>'+input('ct-end',contractEnd,'date','aria-label="结束日期上限" title="结束日期不晚于"')+button('查询','contractFilters()')+button('重置','resetContractFilters()')+'</div><div class="toolbar">'+button('新增','contractDialog()','primary')+button('导入','contractImportDialog()')+button('导出','confirmContractExport()')+'<span class="spacer"></span>'+button('字段配置','contractFieldDialog()')+button('表头设置','contractColumnDialog()')+button(contractSort==='desc'?'更新时间 ↓':'更新时间 ↑',"contractSort=contractSort==='desc'?'asc':'desc';render()")+'</div>'+table([...cols.map(c=>c[1]),'操作'],cs.slice((pageIndex-1)*20,pageIndex*20).map(c=>[...cols.map(([id])=>id==='name'?button(esc(c.name),"openContract('"+c.id+"')",'link'):id==='status'?tag(c.status,c.status==='生效中'):esc(contractValue(c,id)||'--')),button('查看',"openContract('"+c.id+"')",'link')+button('编辑',"contractDialog('"+c.id+"')",'link')+button('删除',"contractDeleteDialog('"+c.id+"')",'link danger')]))+foot;}
+function openContract(id){if(!contract(id))return toast('合同不存在。');detailContract=id;detailTab='basic';view='contractdetail';render()}
+function renderContractDetail(){const c=contract(detailContract);if(!c){view='contract';return render()}
+ let body='';if(detailTab==='basic')body=table(['字段','内容'],allContractColumns().map(([id,label])=>[esc(label),esc(contractValue(c,id)||'--')]))+attachmentSection('contract',c.id);
+ else if(detailTab==='devices'){const ds=S.contractDevices.filter(r=>r.contract===c.id);body='<div class="toolbar">'+button('关联设备',"contractObjectsDialog('"+c.id+"','device')",'primary')+'</div>'+table(['设备唯一标识','设备名称','所属机构','状态','操作'],ds.map(r=>{const d=device(r.device);return [esc(r.device),esc(d?.name||'设备已删除'),esc(warehouse(d?.warehouse)?.name||'--'),tag(d?.status==='active'?'有效':d?.status==='inactive'?'失效':'已删除'),button('解除',"unlinkContractDevice('"+c.id+"','"+r.device+"')",'link')]}))}
+ else {const rs=S.contractKeys.filter(r=>r.contract===c.id&&visibleKeys(actor).some(k=>k.id===r.key));body='<div class="toolbar">'+button('关联软件密钥',"contractObjectsDialog('"+c.id+"','key')",'primary')+'<span class="hint">显示当前操作机构可见的密钥：'+esc(warehouse(actor).name)+'</span></div>'+table(['密钥编号','名称','软件名称','密钥类型','操作'],rs.map(r=>{const k=key(r.key);return [esc(k.code),esc(k.name),esc(k.software),typeLabel(k.type),button('查看',"keyDetail('"+k.id+"')",'link')+button('解除',"unlinkContractKey('"+c.id+"','"+k.id+"')",'link')]}))+notice('关联按原始密钥保存，调拨不复制或清空合同关系。只展示当前机构有权查看的密钥。');}
+ $('content').innerHTML='<div class="detail-header toolbar"><h2 class="detail-title">'+esc(c.name)+' <small>'+esc(c.code)+'</small></h2>'+tag(c.status,c.status==='生效中')+'<span class="spacer"></span>'+button('编辑',"contractDialog('"+c.id+"')",'primary')+'</div>'+detailTabs([['basic','基本信息'],['devices','关联设备'],['keys','关联软件密钥']])+body;
+}
+function contractDeleteDialog(id){const blocked=S.contractKeys.some(r=>r.contract===id)||S.contractDevices.some(r=>r.contract===id);modal('删除提示','<div class="refer-content"><div class="data-content"><div class="data-title">查询已完成</div><p>'+(blocked?'该合同仍有关联设备或软件密钥，请先解除全部关联。':'该合同未被引用，但删除后将不可恢复，请谨慎操作。')+'</p>'+(!blocked?'<div class="data-title">是否确认删除该合同？</div>':'')+'</div></div>',blocked?null:()=>{deleteContract(id);return '合同已软删除，审计历史保留。';},'删除')}
+
+function unlinkContractKey(cid,kid){modal('解除关联',notice('仅解除这份合同与该密钥的关系，其他关联和库存保持不变。'),()=>{removeContractKey(cid,kid);return '关联已解除，双方视图已同步。';});}
+function unlinkContractDevice(cid,did){modal('解除关联',notice('仅解除合同与设备关系，不改变设备或密钥绑定。'),()=>{transaction('解除合同—设备关联',()=>{if(!contract(cid))throw Error('合同不存在。');S.contractDevices=S.contractDevices.filter(r=>r.contract!==cid||r.device!==did)});return '设备关联已解除。';});}
+function contractColumnDialog(){modal('表头设置','<div class="checklist">'+allContractColumns().map(([id,name])=>'<label><input type="checkbox" name="contract-column" value="'+id+'" '+(S.contractColumns.includes(id)?'checked':'')+'> '+name+'</label>').join('')+'</div>'+notice('台账与导出共用这些列；导出包含筛选结果全部匹配记录。'),()=>{const ids=checked('contract-column');if(!ids.length)throw Error('请至少保留一列。');S.contractColumns=ids;return '表头已更新。';});}
+function attachmentSection(kind,id){const as=S.attachments.filter(a=>a.kind===kind&&a.owner===id);return '<section class="attachment-section"><div class="toolbar"><h3>附件</h3><span class="hint">最多10个 · 单个≤20MB · 办公文档/图片 · 仅下载</span><span class="spacer"></span>'+button('上传附件',"uploadAttachment('"+kind+"','"+id+"')")+'</div>'+table(['文件名称','大小','操作'],as.map(a=>[esc(a.name),(a.size/1024).toFixed(1)+' KB',button('下载',"downloadAttachment('"+a.id+"')",'link')+button('删除',"deleteAttachment('"+a.id+"')",'link')]))+'</section>'}
+function uploadAttachment(kind,id){modal('上传附件',field('选择文件（可多选）','<input id="attachment-files" type="file" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.png,.jpg,.jpeg,.gif,.webp">')+notice('文件仅保存在本次浏览器内存中，刷新后清除。'),()=>{if(kind==='key')editableKey(id);else if(!contract(id))throw Error('合同不存在。');const fs=[...$('attachment-files').files];if(!fs.length)throw Error('必填项不能为空');if(fs.length+S.attachments.filter(a=>a.kind===kind&&a.owner===id).length>10)throw Error('每条记录最多10个附件。');if(fs.some(f=>f.size>20*1024*1024||!/^.+\.(pdf|docx?|xlsx?|pptx?|txt|csv|png|jpe?g|gif|webp)$/i.test(f.name)))throw Error('文件格式不支持或单个文件超过20MB。');for(const f of fs)S.attachments.push({id:nextId('AT'),kind,owner:id,name:f.name,size:f.size,url:URL.createObjectURL(f)});return '附件已上传至本次内存演示。';});}
+function downloadAttachment(id){const a=S.attachments.find(a=>a.id===id);if(!a)return toast('附件不存在。');downloadBlob(a.url,a.name)}
+function deleteAttachment(id){modal('确认删除该附件？','<p>删除操作不可撤回，请谨慎操作！</p>',()=>{const a=S.attachments.find(a=>a.id===id);if(a)URL.revokeObjectURL(a.url);S.attachments=S.attachments.filter(a=>a.id!==id);return '附件已删除。';},'删除')}
+function contractImportDialog(){modal('导入合同主数据',notice('演示沿用新增/更新主数据能力；JSON用于本地验证，真实Excel上传映射待底座接入。不导入合同—密钥关系。')+field('模式','<select id="ci-mode"><option value="new">新增</option><option value="update">按合同编号更新</option></select>')+field('合同主数据（JSON数组）','<textarea id="ci-json" rows="7">'+esc(JSON.stringify([{code:'HT-IMPORT-001',name:'导入合同示例',status:'草稿',start:'',end:'',owner:'张敏',supplier:'',amount:'',remark:''}],null,2))+'</textarea>'),()=>{let rows;try{rows=JSON.parse($('ci-json').value)}catch(e){throw Error('JSON格式无效。')}if(!Array.isArray(rows)||!rows.length)throw Error('至少提供一行主数据。');const rs=rows.map((data,i)=>{try{if(Object.keys(data).some(k=>!['code','name','status','start','end','owner','supplier','amount','remark','extra'].includes(k)))throw Error('仅支持合同主数据字段。');const matches=S.contracts.filter(c=>!c.deleted&&c.code===data.code),old=matches[0];if($('ci-mode').value==='update'&&matches.length!==1)throw Error('当前编号没有唯一匹配，无法定位更新合同。');saveContract($('ci-mode').value==='update'?old.id:null,{...($('ci-mode').value==='update'?old:{}),...data});return [i+2,'成功','--']}catch(e){return [i+2,'失败',esc(e.message)]}});$('modal-body').innerHTML=table(['行号','结果','说明'],rs);$('modal-submit').hidden=true;$('modal-cancel').textContent='关闭';submitAction=null;render();return false;});}
+function confirmContractExport(){const rows=filteredContracts(),cols=allContractColumns().filter(([id])=>S.contractColumns.includes(id));modal('导出合同台账',notice('将导出当前筛选结果的全部 '+rows.length+' 条合同，使用当前表头配置，不局限当前页。不包含附件文件或关系明细。'),()=>{xlsxDownload('合同台账', [cols.map(c=>c[1]),...rows.map(c=>cols.map(([id])=>contractValue(c,id)||''))]);return '合同台账已导出为Excel（'+rows.length+' 条）。';});}
+// 最小标准OOXML工作簿，字符串单元格保护编号和金额精度；ZIP为store，离线可下载。
+function xlsxBlob(rows){
+ const xml=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c])).replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g,'');
+ const files={'[Content_Types].xml':'<?xml version="1.0" encoding="UTF-8"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/></Types>',
+ '_rels/.rels':'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>',
+ 'xl/workbook.xml':'<?xml version="1.0" encoding="UTF-8"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheets><sheet name="台账" sheetId="1" r:id="rId1"/></sheets></workbook>',
+ 'xl/_rels/workbook.xml.rels':'<?xml version="1.0" encoding="UTF-8"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/></Relationships>',
+ 'xl/worksheets/sheet1.xml':'<?xml version="1.0" encoding="UTF-8"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"><sheetData>'+rows.map((row,i)=>'<row r="'+(i+1)+'">'+row.map(v=>'<c t="inlineStr"><is><t xml:space="preserve">'+xml(v)+'</t></is></c>').join('')+'</row>').join('')+'</sheetData></worksheet>'};
+ const enc=new TextEncoder(),parts=[],central=[];let offset=0;
+ const header=(size)=>{const a=new Uint8Array(size);return {a,v:new DataView(a.buffer)}};
+ const crc=b=>{let c=0xffffffff;for(const n of b){c^=n;for(let j=0;j<8;j++)c=(c>>>1)^((c&1)?0xedb88320:0)}return (c^0xffffffff)>>>0};
+ for(const [name,value]of Object.entries(files)){const n=enc.encode(name),b=enc.encode(value),c=crc(b),h=header(30);h.v.setUint32(0,0x04034b50,true);h.v.setUint16(4,20,true);h.v.setUint32(14,c,true);h.v.setUint32(18,b.length,true);h.v.setUint32(22,b.length,true);h.v.setUint16(26,n.length,true);parts.push(h.a,n,b);const d=header(46);d.v.setUint32(0,0x02014b50,true);d.v.setUint16(4,20,true);d.v.setUint16(6,20,true);d.v.setUint32(16,c,true);d.v.setUint32(20,b.length,true);d.v.setUint32(24,b.length,true);d.v.setUint16(28,n.length,true);d.v.setUint32(42,offset,true);central.push(d.a,n);offset+=30+n.length+b.length;}
+ const size=central.reduce((n,b)=>n+b.length,0),end=header(22);end.v.setUint32(0,0x06054b50,true);end.v.setUint16(8,5,true);end.v.setUint16(10,5,true);end.v.setUint32(12,size,true);end.v.setUint32(16,offset,true);return new Blob([...parts,...central,end.a],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+}
+function downloadBlob(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove()}
+function xlsxDownload(name,rows){const u=URL.createObjectURL(xlsxBlob(rows));downloadBlob(u,name+'-'+now().replace(/[- :]/g,'')+'.xlsx');setTimeout(()=>URL.revokeObjectURL(u),3000)}
+function renderGuide(){$('content').innerHTML='<h2>合同与软件密钥管理 · V15</h2><ol><li>软件密钥→机构列表→查看密钥。授权余额按软件＋密钥类型分行；调拨记录统一接收、拒收和撤销。</li><li>总机构预置华东拨入3份，华南预置总机构拨入4份；接收时填写接收人和接收日期。</li><li>安装支持同软件多选密钥、多选设备，系统匹配；调拨仍自动选取且保留禁止拼接和混搭规则。</li><li>安装记录中点击回收，填写业务日期、OA及操作人。原安装显示已回收，新增独立回收记录已完成，库存恢复。</li><li>合同管理→合同台账：新增、编辑、筛选、表头、Excel导出；独立合同字段配置与密钥字段配置恢复内置/自定义字段统一管理。详情可维护设备、软件密钥和附件。</li><li>机构密钥明细可勾选多条→批量关联合同；密钥详情可维护；明细操作列不提供逐行关联合同。双侧共用关系，追加去重，不改变库存。</li></ol><h3>演示边界</h3><p>本地内存，不代表真实SaaS交付。真实权限、并发事务、底座人员/字段/字典、机构共用删除条件、Excel上传映射与附件持久化待工程接入。合同及密钥台账Excel下载可用；导入用JSON演示逐行结果。日期仅业务记录，不产生到期冻结或预约执行。</p><p>建议路径：先看合同1的密钥关系，再进入总机构密钥明细给两条密钥批量关联；随后回合同详情核对。</p>'}
+
+function openFields(kind){fieldModel=kind;go(kind==='contract'?'contractFields':'keyFields')}
+let fieldModel='key';
+function renderFields(kind){fieldModel=kind;const fields=modelFields(kind).filter(f=>(f.name+f.id+(fieldTypes[f.type]||'')).includes(search)),foot=pager(fields.length);
+ $('content').innerHTML=notice('内置字段与自定义字段统一管理；字段配置对整个模型生效，不随当前机构变化。固定附件、设备绑定和调拨记录不作为自定义字段。')+filterbar('支持字段名称、标识、类型搜索')+'<div class="toolbar"><strong>字段列表</strong>'+tag(fields.length+' 个字段')+'<span class="spacer"></span>'+button('新增',"customFieldDialog('"+kind+"')",'primary')+'</div>'+table(['字段名称','字段标识','字段类型','字段来源','必填','校验 / 约束','状态','操作'],fields.slice((pageIndex-1)*20,pageIndex*20).map(f=>{
+ const r=f.numberRule?S.fieldRules[kind]:f;const rules=[f.constraint,r.unique?'唯一校验':'',r.regex?'正则：'+r.regex:'',r.maxLength?'长度 ≤ '+r.maxLength:'',f.type==='money'?'Decimal':''].filter(Boolean).join('；')||'--';
+ return ['<span class="field-name">'+esc(f.name)+'</span>','<span class="field-id">'+esc(f.id)+'</span>',fieldTypes[f.type],tag(f.builtin?'内置字段':'自定义字段',!f.builtin),f.required?'<span class="required">必填</span>':'选填',esc(rules),tag(f.active?'启用':'停用',f.active),f.builtin?(f.numberRule?button('配置校验',"numberRuleDialog('"+kind+"')",'link'):'<span class="lock">'+(f.locked?'创建后锁定；':'')+'内置字段不可删除</span>'):button('编辑',"customFieldDialog('"+kind+"','"+f.id+"')",'link')+button(f.active?'停用':'启用',"fieldToggle('"+kind+"','"+f.id+"')",'link')+button('删除',"fieldDelete('"+kind+"','"+f.id+"')",'link danger')];
+ }))+foot+'<p class="foot">系统审计字段由底座维护，隐藏实例ID不进入业务表单。停用保留原数据；有数据时阻止删除。字段类型及标识创建后固定。</p>';
+}
+function customFieldDialog(kind,id){const f=id?customFields(kind).find(f=>f.id===id):null;if(id&&!f)return toast('字段不存在。');modal(f?'编辑自定义字段':'新增自定义字段','<div class="grid">'+field('字段名称 *',input('f-name',f?.name||''))+field('字段标识 *',input('f-id',f?.id||'','text',f?'disabled':'placeholder="例如 edition"'))+field('字段类型 *','<select id="f-type" '+(f?'disabled':'')+' onchange="fieldTypeChanged()">'+options(['text','longtext','integer','money','date','enum'],f?.type||'text',['短字符','长字符','整数','金额','日期','数据字典下拉'])+'</select>')+field('最大长度（选填）',input('f-length',f?.maxLength||'','number','min="1"'))+'</div><div class="toolbar"><label><input id="f-required" type="checkbox" '+(f?.required?'checked':'')+'> 必填</label><label><input id="f-unique" type="checkbox" '+(f?.unique?'checked':'')+'> 唯一校验</label></div>'+field('正则表达式（选填）',input('f-regex',f?.regex||''))+'<div id="f-dictionary-wrap">'+field('数据字典选项 *（每行一个）','<textarea id="f-dictionary" rows="4">'+esc((f?.dictionary||[]).join('\n'))+'</textarea>')+'</div>'+notice('标识使用英文 snake_case。标识和类型保存后锁定；配置修改不改写历史值，后续保存按当前规则校验。'),()=>{saveCustomField(kind,id,{name:$('f-name').value,id:$('f-id').value,type:$('f-type').value,required:$('f-required').checked,unique:$('f-unique').checked,regex:$('f-regex').value,maxLength:$('f-length').value,dictionary:$('f-dictionary').value.split('\n')});return '字段配置已保存，表单、详情与台账同步。';},'保存');fieldTypeChanged();}
+function fieldTypeChanged(){const dict=$('f-type').value==='enum';$('f-dictionary-wrap').hidden=!dict;$('f-dictionary').disabled=!dict}
+function fieldToggle(kind,id){const f=customFields(kind).find(f=>f.id===id);if(!f)return;modal(f.active?'停用字段':'启用字段',notice(f.active?'停用后表单不再填写该字段，已有数据保留；重新启用后恢复展示。':'启用后恢复表单与台账展示，沿用已有数据。'),()=>{toggleCustomField(kind,id);return '字段状态已更新。';});}
+function fieldDelete(kind,id){modal('删除提示',notice('删除前检查当前及保留记录中的字段数据。有数据时请使用停用，避免丢失历史。')+'<p>是否确认删除该自定义字段？</p>',()=>{deleteCustomField(kind,id);return '字段已归档。';},'删除')}
+function numberRuleDialog(kind){const r=S.fieldRules[kind];modal('编号校验 · '+(kind==='contract'?'合同':'密钥'),'<label><input id="rule-unique" type="checkbox" '+(r.unique?'checked':'')+'> 唯一校验</label>'+field('正则表达式（选填）',input('rule-regex',r.regex))+field('最大长度 *',input('rule-length',r.maxLength,'number','min="1"'))+notice('编号始终必填。保存作用于本模型的新增、编辑和主数据导入；实际业务定位使用隐藏实例ID。'),()=>{saveNumberRule(kind,{unique:$('rule-unique').checked,regex:$('rule-regex').value,maxLength:$('rule-length').value});return '编号校验已保存。';},'保存')}
+function fieldControl(kind,f,obj){const v=valueOfField(obj,f)??'',prefix=kind==='key'?'k-':'c-',id=prefix+(f.prop||f.id),disabled=kind==='key'&&obj.id&&f.locked?'disabled':'';let control;
+ if(f.type==='longtext')control='<textarea id="'+id+'" '+disabled+' rows="3">'+esc(v)+'</textarea>';
+ else if(f.type==='enum'){const vals=f.dictionary||[],labels=f.prop==='type'?vals.map(typeLabel):vals;const current=hasValue(v)?v:(f.required?vals[0]:'');control='<select id="'+id+'" '+disabled+(f.prop==='type'?' onchange="keyTypeChanged()"':'')+'>'+options(f.required?vals:['',...vals],current,f.required?labels:['--',...labels])+'</select>'}
+ else if(f.type==='user')control='<select id="'+id+'">'+options(['',...people()],v,['--',...people()])+'</select>';
+ else control=input(id,v,f.type==='date'?'date':f.type==='integer'?'number':'text',disabled+(f.type==='integer'?' step="1"':'')+(f.type==='money'?' inputmode="decimal"':''));
+ return field(esc(f.name)+(f.required?' *':'')+(disabled?'（创建后锁定）':''),control);
+}
+function readModelForm(kind,obj={}){const out={...obj,extra:{...(obj.extra||{})}},prefix=kind==='key'?'k-':'c-';for(const f of modelFields(kind).filter(f=>f.active)){const el=$(prefix+(f.prop||f.id));if(!el)continue;let v=el.value;if(f.prop==='max')v=Number(v);if(f.prop)out[f.prop]=v;else out.extra[f.id]=v}return out}
+function modelForm(kind,obj){return '<div class="grid">'+modelFields(kind).filter(f=>f.active).map(f=>fieldControl(kind,f,obj)).join('')+'</div>'}
+function keyDialog(id){let k;try{k=id?editableKey(id):null}catch(e){return toast(e.message)}modal(k?'编辑密钥':'新增密钥',modelForm('key',k||{max:10,software:'Office',type:'multi',extra:{}})+notice('软件名称、密钥类型、最大容量及序列号创建后锁定；自定义字段由密钥字段配置统一维护。'),()=>{const data=readModelForm('key',k||{});if(k)editKey(id,data);else createKey(data);return '密钥已保存。';},'保存');if(!k)keyTypeChanged();}
+function contractDialog(id){const c=id?contract(id):null;if(id&&!c)return toast('合同不存在。');modal(c?'编辑合同':'新增合同',modelForm('contract',c||{status:'草稿',extra:{}})+notice('字段由合同字段配置统一维护。合同状态手工维护，不改变密钥库存或绑定。'),()=>{saveContract(id,readModelForm('contract',c||{}));return '合同已保存。';},'保存');}
+function contractFieldDialog(){openFields('contract')}
+function keyCustomCells(k){return customFields('key').filter(f=>f.active).map(f=>esc(hasValue(valueOfField(k,f))?valueOfField(k,f):'--'))}
+function fieldDetailRows(kind,obj){return customFields(kind).filter(f=>f.active).map(f=>[esc(f.name),esc(hasValue(valueOfField(obj,f))?valueOfField(obj,f):'--')])}
+function exportKeys(){const ks=visibleKeys(actor).filter(keyMatches),fs=customFields('key').filter(f=>f.active);xlsxDownload('软件密钥-'+warehouse(actor).name,[['密钥编号','名称','软件名称','密钥类型','最大容量','序列号','有效时间','本机构持有',...fs.map(f=>f.name)],...ks.map(k=>[k.code,k.name,k.software,typeLabel(k.type),k.max,k.serial,k.date,held(k.id,actor),...fs.map(f=>valueOfField(k,f)??'')])]);toast('已导出当前机构及当前筛选的密钥主数据。')}
+
+// V15：截图所示的两类选择器。选择草稿独立于主表单，确定后才回填。
+let pickerState=null,installDraft=null;
+function pickerFieldDefs(kind){
+ if(kind==='device')return [['id','设备唯一标识'],['name','设备名称'],['warehouse','所属机构'],['status','设备状态']];
+ if(kind==='key')return [['code','密钥编号'],['name','密钥名称'],['serial','序列号'],['software','软件名称'],['type','密钥类型'],['date','有效时间'],...customFields('key').filter(f=>f.active).map(f=>['extra:'+f.id,f.name])];
+ return [['code','合同编号'],['name','合同名称'],['status','合同状态'],['owner','负责人']];
+}
+function pickerValue(row,kind,field){if(field.startsWith('extra:'))return row.extra?.[field.slice(6)]??'';if(kind==='device'&&field==='warehouse')return warehouse(row.warehouse)?.name||'';if(kind==='device'&&field==='status')return {active:'有效',inactive:'失效',deleted:'已删除'}[row.status]||'';if(kind==='key'&&field==='type')return typeLabel(row.type);return row[field]??''}
+function pickerCandidates(p){
+ if(p.kind==='device')return S.devices.filter(d=>p.purpose==='install'?d.status==='active':d.status!=='deleted');
+ if(p.kind==='key')return visibleKeys(actor).filter(k=>p.purpose!=='install'||k.software===p.software&&keyFree(k.id)>0);
+ return S.contracts.filter(c=>!c.deleted);
+}
+function openPicker(kind,config){const selected=new Set(config.selected||[]);pickerState={kind,...config,selected,initialCount:selected.size,field:pickerFieldDefs(kind)[0][0],query:'',asset:'',exact:false,searched:kind!=='device',page:1,limit:20};
+ const title=kind==='device'?'添加实例':kind==='key'?'添加密钥':'添加合同';$('picker-title').textContent=title;
+ const fields=pickerFieldDefs(kind);$('picker-controls').innerHTML=(kind==='device'?'<div class="asset-scope"><span>选择资产</span><select id="picker-asset" aria-label="选择资产范围">'+options(['',...new Set(S.devices.map(d=>d.name))],'',['全部资产',...new Set(S.devices.map(d=>d.name))])+'</select></div>':'<div class="picker-range">'+esc(config.range||('候选范围：'+warehouse(actor).name+' / 当前可见'+(kind==='key'?'密钥':'合同')))+'</div>')+'<div class="picker-search"><select id="picker-field" aria-label="选择'+(kind==='device'?'资产':kind==='key'?'密钥':'合同')+'字段">'+options(fields.map(f=>f[0]),fields[0][0],fields.map(f=>f[1]))+'</select><input id="picker-query" placeholder="'+(kind==='device'?'请输入并按Enter结束':'请输入搜索内容')+'" aria-label="搜索内容" onkeydown="if(event.key===\'Enter\'){event.preventDefault();searchPicker()}" >'+(kind==='device'?'<label class="exact-search"><input id="picker-exact" type="checkbox"> 精确搜索</label>':'')+button('搜索','searchPicker()','primary')+button('重置','resetPickerQuery()')+'<span class="spacer"></span><span id="picker-count" class="picker-count"></span></div>';
+ $('picker-error').textContent='';$('picker-add').textContent='添加已选';$('picker-results-title').textContent=kind==='device'?'检索结果':'';renderPickerResults();if(!$('selector-dialog').open)$('selector-dialog').showModal();
+}
+function searchPicker(){if(!pickerState)return;const p=pickerState;p.field=$('picker-field').value;p.query=$('picker-query').value.trim();p.exact=$('picker-exact')?.checked||false;p.asset=$('picker-asset')?.value||'';p.searched=true;p.page=1;renderPickerResults()}
+function resetPickerQuery(){const p=pickerState;if(!p)return;p.field=pickerFieldDefs(p.kind)[0][0];p.query='';p.asset='';p.exact=false;p.searched=p.kind!=='device';p.page=1;$('picker-field').value=p.field;$('picker-query').value='';if($('picker-asset'))$('picker-asset').value='';if($('picker-exact'))$('picker-exact').checked=false;renderPickerResults()}
+function filteredPickerRows(p){if(!p.searched)return [];return pickerCandidates(p).filter(o=>(!p.asset||o.name===p.asset)&&(!p.query||(p.exact?String(pickerValue(o,p.kind,p.field)).toLowerCase()===p.query.toLowerCase():String(pickerValue(o,p.kind,p.field)).toLowerCase().includes(p.query.toLowerCase()))));}
+function pickerDisabled(id){return pickerState?.existing?.includes(id)||false}
+function pickerTableCells(row,p){
+ if(p.kind==='device')return [esc(row.id),esc(row.name),esc(row.name==='设计电脑'?'设计设备':row.name==='研发工作站'?'工作站':'计算机'),esc(warehouse(row.warehouse)?.name||'--'),tag(pickerValue(row,'device','status'),row.status==='active')];
+ if(p.kind==='key')return [esc(row.code),esc(row.name),esc(row.serial||'--'),esc(row.software),typeLabel(row.type),p.purpose==='install'?keyFree(row.id):held(row.id,actor),esc(warehouse(actor).name)];
+ return [esc(row.code),esc(row.name),tag(row.status),esc(row.owner||'--'),esc(row.start||'--'),esc(row.end||'--')];
+}
+function renderPickerResults(){const p=pickerState;if(!p)return;const rows=filteredPickerRows(p),pages=Math.max(1,Math.ceil(rows.length/p.limit));p.page=Math.min(p.page,pages);const visible=rows.slice((p.page-1)*p.limit,p.page*p.limit);$('picker-error').textContent='';
+ if(!p.searched){$('picker-results').innerHTML='<div class="picker-empty"><svg viewBox="0 0 160 115" aria-hidden="true"><path d="M26 50h108v52H26z" fill="var(--color-fill-3)"/><path d="M26 50 48 20h65l21 30z" fill="var(--color-fill-2)"/><path d="M26 50h108l-21 23H48z" fill="var(--color-border-3)"/><path d="M57 73h46v9H57z" fill="var(--color-bg-white)"/></svg><strong>当前暂未进行内容搜索</strong></div>';$('picker-pagination').innerHTML='';}
+ else {const heads=p.kind==='device'?['设备唯一标识','设备名称','资产类型','所属机构','设备状态']:p.kind==='key'?['密钥编号','密钥名称','序列号','软件名称','密钥类型',p.purpose==='install'?'当前可分配':'本机构持有','所属机构']:['合同编号','合同名称','合同状态','负责人','开始日期','结束日期'];
+ $('picker-results').innerHTML='<div class="table-selector">'+table(['<input id="picker-page-all" type="checkbox" aria-label="选择本页结果" onchange="pickerSelectPage(this.checked)" '+(!visible.some(o=>!pickerDisabled(o.id))?'disabled':'')+'>',...heads],visible.map(row=>['<input name="picker-choice" type="checkbox" aria-label="选择 '+esc(row.code||row.id)+'" value="'+row.id+'" '+(p.selected.has(row.id)||pickerDisabled(row.id)?'checked':'')+' '+(pickerDisabled(row.id)?'disabled title="已关联"':'')+' onchange="pickerToggle(this.value,this.checked)">',...pickerTableCells(row,p)]))+'</div>';
+ $('picker-pagination').innerHTML='<div class="picker-page-left">共 '+rows.length+' 条<span>每页 <select aria-label="每页条数" onchange="pickerLimit(Number(this.value))">'+options([10,20,50],p.limit,[10,20,50])+'</select> 条</span><span>已选跨页保留</span></div><div class="picker-page-right">'+button('上一页',"pickerPage("+(p.page-1)+")")+'<span>'+p.page+' / '+pages+'</span>'+button('下一页',"pickerPage("+(p.page+1)+")")+'</div>';
+ const eligible=visible.filter(o=>!pickerDisabled(o.id)),n=eligible.filter(o=>p.selected.has(o.id)).length;const all=$('picker-page-all');if(all){all.checked=!!eligible.length&&n===eligible.length;all.indeterminate=n>0&&n<eligible.length;}
+ }
+ updatePickerCount();
+}
+function updatePickerCount(){const p=pickerState;if(!p)return;const cap=p.kind==='key'&&p.purpose==='install'?' · 可用名额 '+[...p.selected].reduce((n,id)=>n+keyFree(id),0):'';$('picker-count').textContent='已选择 '+p.selected.size+' 条'+cap;$('picker-add').disabled=!p.selected.size&&!(p.purpose==='install'&&p.initialCount>0);$('picker-add').textContent=!p.selected.size&&p.purpose==='install'&&p.initialCount>0?'确定选择':'添加已选';$('picker-add').hidden=!p.searched;$('picker-clear').hidden=!p.selected.size;}
+function pickerToggle(id,checked){if(pickerDisabled(id))return;checked?pickerState.selected.add(id):pickerState.selected.delete(id);const boxes=[...document.querySelectorAll('[name=picker-choice]:not(:disabled)')],n=boxes.filter(e=>e.checked).length;const h=$('picker-page-all');if(h){h.checked=!!boxes.length&&n===boxes.length;h.indeterminate=n>0&&n<boxes.length}updatePickerCount()}
+function pickerSelectPage(checked){document.querySelectorAll('[name=picker-choice]:not(:disabled)').forEach(e=>{e.checked=checked;checked?pickerState.selected.add(e.value):pickerState.selected.delete(e.value)});renderPickerResults()}
+function pickerPage(n){const total=filteredPickerRows(pickerState).length,pages=Math.max(1,Math.ceil(total/pickerState.limit));pickerState.page=Math.max(1,Math.min(pages,n));renderPickerResults()}
+function pickerLimit(n){pickerState.limit=n;pickerState.page=1;renderPickerResults()}
+function clearPickerSelection(){pickerState.selected.clear();if(pickerState.purpose==='install')pickerState.searched=true;renderPickerResults()}
+function cancelPicker(){$('selector-dialog').close();pickerState=null}
+function confirmPicker(){const p=pickerState;if(!p||(!p.selected.size&&!(p.purpose==='install'&&p.initialCount>0)))return;try{const candidates=new Set(pickerCandidates(p).map(o=>o.id));const ids=[...p.selected];if(ids.some(id=>!candidates.has(id)||pickerDisabled(id)))throw Error('部分选择已不在当前候选范围，请重新选择。');const message=p.onConfirm(ids);$('selector-dialog').close();pickerState=null;if(message)toast(message)}catch(e){$('picker-error').textContent=e.message;$('picker-error').focus()}}
+function installDialog(software=''){const ss=softwareOptions.filter(s=>visibleKeys(actor).some(k=>k.software===s&&keyFree(k.id)>0));if(!ss.length)return toast('本机构暂无可用软件密钥。');const chosen=ss.includes(software)?software:ss[0];installDraft={software:chosen,keys:[],devices:[]};
+ modal('安装',metaFields('in','安装')+readonly('安装记录','--')+field('软件名称 *','<select id="in-software" onchange="changeInstallSoftware()">'+options(ss,chosen)+'</select>')+'<div class="selection-panel"><div class="toolbar"><strong>密钥信息 <span class="required">*</span></strong><span id="install-key-count" class="hint"></span><span class="spacer"></span>'+button('选择密钥',"chooseInstallObjects('key')")+'</div><div id="install-key-summary"></div></div><div class="selection-panel"><div class="toolbar"><strong>安装设备 <span class="required">*</span></strong><span id="install-device-count" class="hint"></span><span class="spacer"></span>'+button('选择设备',"chooseInstallObjects('device')")+'</div><div id="install-device-summary"></div></div>'+field('备注','<textarea id="in-remark" rows="2"></textarea>')+'<div class="toolbar">'+button('预览系统匹配','previewInstall()')+'<span class="hint">安装数量以设备数为准，无需逐台配对。</span></div><div id="install-preview"></div>',()=>{installManual($('in-software').value,installDraft.keys,installDraft.devices,readMeta('in'));installDraft=null;return '安装成功，已生成逐设备记录并同步库存。';});renderInstallSelection();
+}
+function changeInstallSoftware(){installDraft.software=$('in-software').value;installDraft.keys=[];renderInstallSelection();invalidateInstallPreview()}
+function renderInstallSelection(){if(!installDraft)return;$('install-key-count').textContent='已选 '+installDraft.keys.length+' 把 · 可用名额 '+installDraft.keys.reduce((n,id)=>n+keyFree(id),0);$('install-device-count').textContent='已选 '+installDraft.devices.length+' 台';
+ $('install-key-summary').innerHTML=installDraft.keys.length?table(['密钥编号','密钥类型','当前可分配','操作'],installDraft.keys.map(id=>[esc(key(id).code),typeLabel(key(id).type),keyFree(id),button('移除',"removeInstallSelection('key','"+id+"')",'link')])):'<div class="selection-placeholder">请选择密钥，可通过密钥字段搜索后勾选。</div>';
+ $('install-device-summary').innerHTML=installDraft.devices.length?table(['设备唯一标识','设备名称','所属机构','操作'],installDraft.devices.map(id=>[esc(id),esc(device(id).name),esc(warehouse(device(id).warehouse)?.name||'--'),button('移除',"removeInstallSelection('device','"+id+"')",'link')])):'<div class="selection-placeholder">请选择设备，可选择全部资产范围并按字段检索。</div>';
+}
+function chooseInstallObjects(kind){openPicker(kind,{purpose:'install',software:installDraft.software,selected:kind==='key'?installDraft.keys:installDraft.devices,range:'候选范围：'+warehouse(actor).name+' / '+installDraft.software+' / 当前可分配密钥',onConfirm:ids=>{installDraft[kind==='key'?'keys':'devices']=ids;renderInstallSelection();invalidateInstallPreview();return ''}})}
+function removeInstallSelection(kind,id){const prop=kind==='key'?'keys':'devices';installDraft[prop]=installDraft[prop].filter(x=>x!==id);renderInstallSelection();invalidateInstallPreview()}
+function previewInstall(){try{const assignments=planManual($('in-software').value,installDraft.keys,installDraft.devices);$('install-preview').innerHTML=table(['安装设备','系统匹配密钥'],assignments.map(a=>[esc(a.device),esc(key(a.key).code)]));$('modal-error').textContent=''}catch(e){showError(e)}}
+function contractObjectsDialog(cid,kind){if(!contract(cid))return toast('合同不存在。');openPicker(kind==='device'?'device':'key',{purpose:'contract',existing:(kind==='device'?S.contractDevices:S.contractKeys).filter(r=>r.contract===cid).map(r=>r[kind==='device'?'device':'key']),range:'候选范围：'+warehouse(actor).name+' / 当前可见密钥 / 合同关联',onConfirm:ids=>{const result=kind==='key'?addContractKeys(ids,[cid]):addContractDevices(cid,ids);render();return kind==='key'?'已新增 '+result.added+' 对合同关联。':'已新增 '+result+' 条设备关联。';}})}
+function keyContractsDialog(ids){try{ids.forEach(editableKey)}catch(e){return toast(e.message)}openPicker('contract',{purpose:'keyContracts',range:'候选范围：可查看合同 / 将为 '+ids.length+' 条密钥追加关联 / 已有关系跳过',onConfirm:cids=>{const r=addContractKeys(ids,cids);selectedKeys.clear();render();return '关联完成：新增 '+r.added+' 对，已有 '+r.skipped+' 对已跳过。';}})}
+
+$ ('selector-dialog').addEventListener('cancel',e=>{e.preventDefault();cancelPicker()});
+seed();const entry=new URLSearchParams(location.hash.slice(1));const entryWarehouse=entry.get('warehouse'),entryTab=entry.get('tab');if(warehouse(entryWarehouse)?.status==='active'&&['balance','inbox','instances','installs','transfers'].includes(entryTab))enterWarehouse(entryWarehouse,entryTab);else if(entry.get('view')==='contracts'){go('contract')}else if(entry.get('view')==='keyFields'){openFields('key')}else if(entry.get('view')==='contractFields'){openFields('contract')}else render();
+
+</script></body></html>
